@@ -1,1 +1,1 @@
-web: python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn restaurant.wsgi --bind 0.0.0.0:$PORT
+web: python manage.py migrate --noinput && python manage.py collectstatic --noinput && mkdir -p ${DATA_DIR:-/data}/media && cp -rn media/. ${DATA_DIR:-/data}/media/ ; python create_superuser.py ; if [ "$RUN_SEED" = "1" ]; then python seed_database.py; fi ; gunicorn restaurant.wsgi --bind 0.0.0.0:$PORT
