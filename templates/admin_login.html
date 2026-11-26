@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Staff & Management Portal | AURA Fine Dining{% endblock %}
+
+{% block content %}
+<section class="d-flex align-items-center justify-content-center min-vh-100 py-5" style="margin-top: 50px; background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.15) 0%, rgba(10, 11, 14, 0.95) 80%);">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8 col-sm-11" data-aos="zoom-in">
+                <!-- Admin Card with distinctive security gold border -->
+                <div class="reservation-box p-4 p-md-5" style="border: 2px solid var(--primary-gold); box-shadow: 0 0 35px rgba(212, 175, 55, 0.25);">
+                    <div class="text-center mb-4">
+                        <div class="p-3 bg-warning bg-opacity-10 text-gold rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 65px; height: 65px;">
+                            <i class="bi bi-shield-lock-fill fs-2"></i>
+                        </div>
+                        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 small mb-2 d-inline-block">Staff & Admin Only</span>
+                        <h2 class="brand-font text-white mb-1">Management Console</h2>
+                        <p class="text-muted small">Authorized access for Maître d', Executive Chefs, and Sommelier Directors.</p>
+                    </div>
+
+                    <!-- Admin Form -->
+                    <form method="POST" action="{% url 'admin_login' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="adminUsername" class="form-label">
+                                <i class="bi bi-person-badge text-gold me-1"></i> Admin Username / ID
+                            </label>
+                            <input type="text" class="form-control" id="adminUsername" name="username" placeholder="Staff Username (e.g. admin)" required autofocus>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="adminPassword" class="form-label">
+                                <i class="bi bi-key-fill text-gold me-1"></i> Security Passkey
+                            </label>
+                            <input type="password" class="form-control" id="adminPassword" name="password" placeholder="••••••••" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold btn-lg w-100 py-2 mb-3">
+                            <i class="bi bi-unlock-fill me-2"></i> Authenticate & Enter Dashboard
+                        </button>
+
+                        <div class="text-center pt-3 border-top border-secondary border-opacity-25">
+                            <p class="text-muted small mb-0">
+                                Looking for dining reservations or customer profile? <br>
+                                <a href="{% url 'login' %}" class="text-gold fw-bold text-decoration-none">
+                                    <i class="bi bi-arrow-left me-1"></i> Switch to Guest Login
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Story | AURA Fine Dining &amp; Bar{% endblock %}
+{% block meta_description %}The story of AURA Fine Dining &amp; Bar: a seven-star celebration of Tamil Nadu's heritage kitchens, banana-leaf feasts and the Tamil tradition of virunthombal (hospitality).{% endblock %}
+{% block og_title %}Our Story | AURA Fine Dining &amp; Bar{% endblock %}
+
+{% block content %}
+<!-- ABOUT HERO HEADER -->
+<section class="py-5" style="margin-top: 75px; background: radial-gradient(circle at 50% 20%, rgba(226, 54, 44, 0.18) 0%, rgba(245, 184, 36, 0.08) 50%, transparent 75%);">
+    <div class="container text-center py-4" data-aos="fade-down">
+        <span class="badge-coral mb-2 d-inline-block">The Journey & Vision</span>
+        <h1 class="brand-font display-4 mb-3">Our Heritage & <span class="text-sunset-gradient">Philosophy</span></h1>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+            A love for Tamil Nadu's kitchens, from temple towns to coastal villages, and for the tradition of treating every guest like family.
+        </p>
+    </div>
+</section>
+
+<!-- MAIN STORY NARRATIVE -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center g-5 mb-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <span class="badge-emerald mb-2 d-inline-block">Tamil Heritage, Seven-Star Service</span>
+                <h2 class="brand-font mb-4" style="font-size: clamp(1.8rem, 3.5vw, 2.8rem);">
+                    Where Ancient Recipes Meet <br>
+                    <span class="text-ocean-gradient">Royal Hospitality</span>
+                </h2>
+                <p class="text-white lead mb-3">
+                    AURA means "palace of beauty": a place built around the joy of a Tamil feast.
+                </p>
+                <p class="text-muted mb-4">
+                    Our kitchen brings together five regional traditions of Tamil Nadu: the fiery, aromatic Chettinad cuisine, the coconut-and-millet kitchens of the Kongu region, Madurai's famous late-night favourites, the temple sweets of Thanjavur and the seafood of the Coromandel coast.
+                </p>
+                <p class="text-muted mb-4">
+                    Masalas are ground on stone, curries are simmered slowly, and every meal is served the traditional way on a fresh banana leaf, in a dining hall inspired by the carved pillars and courtyards of old Tamil palaces.
+                </p>
+                <div class="p-3 rounded-3 bg-card-surface border-start border-4 border-warning">
+                    <p class="mb-1 text-light fst-italic">
+                        "Virunthombal, the care we show to a guest, is the oldest recipe we know. Everything else is just cooking."
+                    </p>
+                    <small class="text-gold fw-bold">&mdash; Head Chef, AURA</small>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="row g-3">
+                    <div class="col-6">
+                        {% if chefs and chefs.0.image %}
+                            <img src="{{ chefs.0.image.url }}" alt="{{ chefs.0.name }}" class="img-fluid rounded-4 shadow-sm w-100" style="height: 280px; object-fit: cover; border: 2px solid rgba(226, 54, 44, 0.4);" loading="lazy">
+                        {% else %}
+                            <img src="{% static 'images/placeholder_dish.png' %}" alt="Our kitchen" class="img-fluid rounded-4 shadow-sm w-100" style="height: 280px; object-fit: cover;" loading="lazy">
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        <img src="{% static 'images/hero_dish.png' %}" alt="A traditional Tamil feast" class="img-fluid rounded-4 shadow-sm w-100 mt-4" style="height: 280px; object-fit: cover; border: 2px solid rgba(245, 184, 36, 0.4);" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 PILLARS -->
+        <div class="row g-4 my-5">
+            <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="p-4 bg-card-surface rounded-4 border border-secondary border-opacity-25 h-100" style="border-top: 3px solid var(--color-emerald) !important;">
+                    <div class="p-3 bg-success bg-opacity-20 text-emerald rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-flower1 fs-3"></i>
+                    </div>
+                    <h5 class="text-emerald brand-font">Heritage Recipes</h5>
+                    <p class="text-muted small mb-0">Family recipes from Chettinad, Kongu, Madurai and Thanjavur, cooked slowly the traditional way.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="p-4 bg-card-surface rounded-4 border border-secondary border-opacity-25 h-100" style="border-top: 3px solid var(--color-coral) !important;">
+                    <div class="p-3 bg-danger bg-opacity-20 text-coral rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-fire fs-3"></i>
+                    </div>
+                    <h5 class="text-coral brand-font">Stone-Ground Spices</h5>
+                    <p class="text-muted small mb-0">Pepper, cardamom, fennel and red chillies are ground fresh, so every curry tastes of its own spices.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="p-4 bg-card-surface rounded-4 border border-secondary border-opacity-25 h-100" style="border-top: 3px solid var(--color-cyan) !important;">
+                    <div class="p-3 bg-info bg-opacity-20 text-cyan rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-cup-hot fs-3"></i>
+                    </div>
+                    <h5 class="text-cyan brand-font">Bar, Coffee &amp; Sweets</h5>
+                    <p class="text-muted small mb-0">Cocktails and mocktails at the bar, decoction filter coffee, payasam and temple-style sweets to close the meal the Tamil way.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="p-4 bg-card-surface rounded-4 border border-secondary border-opacity-25 h-100" style="border-top: 3px solid var(--color-purple) !important;">
+                    <div class="p-3 bg-primary bg-opacity-20 text-purple rounded-circle d-inline-block mb-3">
+                        <i class="bi bi-stars fs-3"></i>
+                    </div>
+                    <h5 class="text-purple brand-font">Seven-Star Service</h5>
+                    <p class="text-muted small mb-0">A personal host, unhurried courses and warm hospitality from the first "Vanakkam" to the last sip of coffee.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="temple-border thin"></div>
+
+<!-- CULINARY TEAM (FROM THE DATABASE) -->
+<section class="py-5 bg-dark-surface">
+    <div class="container py-4">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="badge-gold mb-2 d-inline-block">The People Behind the Kitchen</span>
+            <h2 class="brand-font display-6">Meet Our <span class="text-sunset-gradient">Chefs & Hosts</span></h2>
+            <p class="text-muted">The cooks and hosts who make every visit special.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            {% for chef in chefs %}
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+                <div class="bg-card-surface rounded-4 overflow-hidden border border-secondary border-opacity-25 text-center h-100" style="transition: var(--transition);">
+                    {% if chef.image %}
+                        <img src="{{ chef.image.url }}" alt="{{ chef.name }}" class="w-100" style="height: 320px; object-fit: cover;" loading="lazy">
+                    {% else %}
+                        <img src="{% static 'images/placeholder_dish.png' %}" alt="{{ chef.name }}" class="w-100" style="height: 320px; object-fit: cover;" loading="lazy">
+                    {% endif %}
+                    <div class="p-4">
+                        <h4 class="brand-font text-white mb-1">{{ chef.name }}</h4>
+                        <p class="{% cycle 'text-coral' 'text-cyan' 'text-gold' %} small fw-bold mb-3">{{ chef.title }}</p>
+                        <p class="text-muted small mb-0">{{ chef.bio }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted py-4">
+                <p>Chef profiles will appear here once you add them in the Django admin.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="py-5 text-center">
+    <div class="container py-4" data-aos="zoom-in">
+        <h3 class="brand-font text-white mb-3">Ready to Be Our Guest?</h3>
+        <p class="text-muted max-w-600 mx-auto mb-4" style="max-width: 600px;">
+            Reservations open 30 days in advance. Book early for festival days and weekends.
+        </p>
+        <a href="{% url 'reservation' %}" class="btn btn-coral btn-lg">
+            <i class="bi bi-calendar-check me-2"></i> Book Your Table
+        </a>
+    </div>
+</section>
+{% endblock %}

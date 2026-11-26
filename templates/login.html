@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Guest Sign In | AURA Fine Dining &amp; Bar{% endblock %}
+{% block meta_description %}Sign in to manage your AURA Fine Dining &amp; Bar dining reservations.{% endblock %}
+
+{% block content %}
+<section class="d-flex align-items-center justify-content-center min-vh-100 py-5" style="margin-top: 50px; background: radial-gradient(circle at 50% 30%, rgba(245, 184, 36, 0.12) 0%, transparent 70%);">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8 col-sm-11" data-aos="zoom-in">
+                <div class="reservation-box p-4 p-md-5">
+                    <!-- Brand Heading -->
+                    <div class="text-center mb-4">
+                        <i class="bi bi-stars brand-logo-icon fs-1 text-gold d-block mb-2"></i>
+                        <span class="badge-gold mb-2 d-inline-block">Guest Sign In</span>
+                        <h2 class="brand-font text-white mb-1">Welcome Back</h2>
+                        <p class="text-muted small">Sign in to view and manage your dining reservations.</p>
+                    </div>
+
+                    <!-- Customer Login Form -->
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        {# Where to go after login (the view checks that it is a safe address) #}
+                        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="bi bi-person-fill text-gold me-1"></i> Username or Email
+                            </label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ request.POST.username|default:'' }}" placeholder="Your username or email" autocomplete="username" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label for="password" class="form-label mb-0">
+                                    <i class="bi bi-shield-lock-fill text-gold me-1"></i> Password
+                                </label>
+                                <a href="{% url 'contact' %}" class="text-gold text-decoration-none small" title="Contact us and we will help you reset it">Forgot?</a>
+                            </div>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="rememberMe" name="remember_me" value="1">
+                            <label class="form-check-label text-muted small" for="rememberMe">
+                                Keep me signed in
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold btn-lg w-100 py-2 mb-3">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Account
+                        </button>
+
+                        <div class="text-center pt-2 border-top border-secondary border-opacity-25">
+                            <p class="text-muted small mb-2">
+                                New to AURA? <a href="{% url 'register' %}" class="text-gold fw-bold text-decoration-none">Create Guest Profile</a>
+                            </p>
+                            <a href="{% url 'admin_login' %}" class="text-secondary small text-decoration-none d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-shield-check text-gold"></i> Restaurant Staff & Admin Portal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

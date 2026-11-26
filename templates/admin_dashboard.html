@@ -1,0 +1,1543 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA — Admin Console</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root {
+    --midnight-black:    rgb(9, 12, 18);
+    --deep-navy:         rgb(10, 14, 26);
+    --dark-panel:        rgb(16, 20, 36);
+    --card-bg:           rgb(22, 28, 50);
+    --card-hover:        rgb(28, 36, 60);
+    --border-subtle:     rgba(255, 255, 255, 0.07);
+
+    --sunset-coral:      rgb(255, 94, 87);
+    --electric-gold:     rgb(255, 198, 0);
+    --neon-mint:         rgb(0, 230, 160);
+    --sky-azure:         rgb(15, 188, 249);
+    --royal-violet:      rgb(165, 94, 234);
+    --tangerine:         rgb(255, 140, 0);
+    --rose-pink:         rgb(255, 100, 180);
+    --lime-green:        rgb(80, 230, 100);
+    --ice-blue:          rgb(100, 210, 255);
+    --hot-magenta:       rgb(255, 0, 128);
+    --cyan-glow:         rgb(0, 255, 230);
+    --amber-fire:        rgb(255, 165, 0);
+
+    --text-primary:      rgb(241, 245, 249);
+    --text-muted:        rgb(148, 163, 184);
+    --text-dim:          rgb(100, 116, 139);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--midnight-black);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .admin-sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--deep-navy);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-brand {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .sidebar-brand .brand-name {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, var(--electric-gold), var(--sunset-coral), var(--royal-violet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sidebar-brand .brand-sub {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .sidebar-nav { padding: 16px 0; flex: 1; }
+  .sidebar-section-title {
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 12px 24px 6px;
+    margin-top: 6px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 24px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: all 0.25s ease;
+  }
+  .sidebar-link:hover, .sidebar-link.active {
+    background: rgba(255, 198, 0, 0.07);
+    color: var(--electric-gold);
+    border-left-color: var(--electric-gold);
+  }
+  .sidebar-link i { width: 20px; text-align: center; font-size: 1rem; }
+  .sidebar-link.danger:hover {
+    background: rgba(255, 94, 87, 0.1);
+    color: var(--sunset-coral);
+    border-left-color: var(--sunset-coral);
+  }
+  .sidebar-link.pos-link:hover, .sidebar-link.pos-link.active {
+    background: rgba(0, 230, 160, 0.07);
+    color: var(--neon-mint);
+    border-left-color: var(--neon-mint);
+  }
+  .sidebar-link.kitchen-link:hover {
+    background: rgba(255, 140, 0, 0.07);
+    color: var(--tangerine);
+    border-left-color: var(--tangerine);
+  }
+
+  .sidebar-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .admin-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--royal-violet), var(--sky-azure));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1.1rem;
+    color: white;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .admin-main {
+    margin-left: 260px;
+    min-height: 100vh;
+    background: var(--midnight-black);
+  }
+
+  .admin-topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(9, 12, 18, 0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topbar-title { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+  .topbar-badge {
+    background: linear-gradient(135deg, var(--electric-gold), var(--tangerine));
+    color: rgb(0,0,0);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .admin-content { padding: 32px; }
+
+  /* ── STAT CARDS ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 18px;
+    margin-bottom: 36px;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 22px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+  }
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .stat-card.coral::before  { background: linear-gradient(90deg, var(--sunset-coral), var(--tangerine)); }
+  .stat-card.gold::before   { background: linear-gradient(90deg, var(--electric-gold), var(--lime-green)); }
+  .stat-card.mint::before   { background: linear-gradient(90deg, var(--neon-mint), var(--sky-azure)); }
+  .stat-card.violet::before { background: linear-gradient(90deg, var(--royal-violet), var(--rose-pink)); }
+  .stat-card.azure::before  { background: linear-gradient(90deg, var(--sky-azure), var(--ice-blue)); }
+  .stat-card.orange::before { background: linear-gradient(90deg, var(--tangerine), var(--electric-gold)); }
+  .stat-card.rose::before   { background: linear-gradient(90deg, var(--rose-pink), var(--royal-violet)); }
+  .stat-card.lime::before   { background: linear-gradient(90deg, var(--lime-green), var(--neon-mint)); }
+  .stat-card.magenta::before { background: linear-gradient(90deg, var(--hot-magenta), var(--rose-pink)); }
+  .stat-card.cyan::before   { background: linear-gradient(90deg, var(--cyan-glow), var(--sky-azure)); }
+
+  .stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 14px;
+  }
+  .stat-card.coral .stat-icon   { background: rgba(255,94,87,0.15);    color: var(--sunset-coral); }
+  .stat-card.gold .stat-icon    { background: rgba(255,198,0,0.15);    color: var(--electric-gold); }
+  .stat-card.mint .stat-icon    { background: rgba(0,230,160,0.15);    color: var(--neon-mint); }
+  .stat-card.violet .stat-icon  { background: rgba(165,94,234,0.15);   color: var(--royal-violet); }
+  .stat-card.azure .stat-icon   { background: rgba(15,188,249,0.15);   color: var(--sky-azure); }
+  .stat-card.orange .stat-icon  { background: rgba(255,140,0,0.15);    color: var(--tangerine); }
+  .stat-card.rose .stat-icon    { background: rgba(255,100,180,0.15);  color: var(--rose-pink); }
+  .stat-card.lime .stat-icon    { background: rgba(80,230,100,0.15);   color: var(--lime-green); }
+  .stat-card.magenta .stat-icon { background: rgba(255,0,128,0.15);    color: var(--hot-magenta); }
+  .stat-card.cyan .stat-icon    { background: rgba(0,255,230,0.15);    color: var(--cyan-glow); }
+
+  .stat-card .stat-value {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-card .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .stat-card.coral .stat-value   { color: var(--sunset-coral); }
+  .stat-card.gold .stat-value    { color: var(--electric-gold); }
+  .stat-card.mint .stat-value    { color: var(--neon-mint); }
+  .stat-card.violet .stat-value  { color: var(--royal-violet); }
+  .stat-card.azure .stat-value   { color: var(--sky-azure); }
+  .stat-card.orange .stat-value  { color: var(--tangerine); }
+  .stat-card.rose .stat-value    { color: var(--rose-pink); }
+  .stat-card.lime .stat-value    { color: var(--lime-green); }
+  .stat-card.magenta .stat-value { color: var(--hot-magenta); }
+  .stat-card.cyan .stat-value    { color: var(--cyan-glow); }
+
+  /* ── SECTION PANELS ── */
+  .admin-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .panel-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .panel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .panel-title .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.8); }
+  }
+  .panel-body { padding: 0; }
+
+  /* ── ADD / ACTION BUTTONS ── */
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .btn-add.gold {
+    background: rgba(255,198,0,0.15);
+    color: var(--electric-gold);
+    border: 1px solid rgba(255,198,0,0.4);
+  }
+  .btn-add.gold:hover { background: rgba(255,198,0,0.25); color: var(--electric-gold); }
+  .btn-add.mint {
+    background: rgba(0,230,160,0.15);
+    color: var(--neon-mint);
+    border: 1px solid rgba(0,230,160,0.4);
+  }
+  .btn-add.mint:hover { background: rgba(0,230,160,0.25); color: var(--neon-mint); }
+  .btn-add.violet {
+    background: rgba(165,94,234,0.15);
+    color: var(--royal-violet);
+    border: 1px solid rgba(165,94,234,0.4);
+  }
+  .btn-add.violet:hover { background: rgba(165,94,234,0.25); color: var(--royal-violet); }
+  .btn-add.azure {
+    background: rgba(15,188,249,0.15);
+    color: var(--sky-azure);
+    border: 1px solid rgba(15,188,249,0.4);
+  }
+  .btn-add.azure:hover { background: rgba(15,188,249,0.25); color: var(--sky-azure); }
+  .btn-add.orange {
+    background: rgba(255,140,0,0.15);
+    color: var(--tangerine);
+    border: 1px solid rgba(255,140,0,0.4);
+  }
+  .btn-add.orange:hover { background: rgba(255,140,0,0.25); color: var(--tangerine); }
+
+  .btn-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .btn-icon.edit {
+    background: rgba(15,188,249,0.15);
+    color: var(--sky-azure);
+  }
+  .btn-icon.edit:hover { background: rgba(15,188,249,0.3); color: var(--sky-azure); }
+  .btn-icon.delete {
+    background: rgba(255,94,87,0.15);
+    color: var(--sunset-coral);
+  }
+  .btn-icon.delete:hover { background: rgba(255,94,87,0.3); color: var(--sunset-coral); }
+
+  /* ── TABLE ── */
+  .admin-table { width: 100%; border-collapse: collapse; }
+  .admin-table thead th {
+    background: rgb(14, 18, 34);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 18px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .admin-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s ease;
+  }
+  .admin-table tbody tr:hover { background: var(--card-hover); }
+  .admin-table tbody td {
+    padding: 12px 18px;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    vertical-align: middle;
+  }
+  .admin-table tbody td.muted { color: var(--text-muted); font-size: 0.82rem; }
+
+  /* ── BADGES ── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .status-badge.pending    { background: rgba(255,198,0,0.15);   color: var(--electric-gold); border: 1px solid rgba(255,198,0,0.3); }
+  .status-badge.confirmed  { background: rgba(0,230,160,0.15);   color: var(--neon-mint);     border: 1px solid rgba(0,230,160,0.3); }
+  .status-badge.cancelled  { background: rgba(255,94,87,0.15);   color: var(--sunset-coral);  border: 1px solid rgba(255,94,87,0.3); }
+  .status-badge.completed  { background: rgba(15,188,249,0.15);  color: var(--sky-azure);     border: 1px solid rgba(15,188,249,0.3); }
+  .status-badge.no_show    { background: rgba(255,0,128,0.15);   color: var(--hot-magenta);   border: 1px solid rgba(255,0,128,0.3); }
+
+  .meal-badge {
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .meal-breakfast { background: rgba(255,165,0,0.15); color: var(--amber-fire); }
+  .meal-lunch     { background: rgba(0,230,160,0.15); color: var(--neon-mint); }
+  .meal-snacks    { background: rgba(255,198,0,0.15); color: var(--electric-gold); }
+  .meal-dinner    { background: rgba(165,94,234,0.15); color: var(--royal-violet); }
+  .meal-all_day   { background: rgba(15,188,249,0.15); color: var(--sky-azure); }
+
+  /* ── MENU GRID ── */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    padding: 20px;
+  }
+  .menu-card {
+    background: var(--dark-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.25s ease;
+    position: relative;
+  }
+  .menu-card:hover { transform: translateY(-3px); }
+  .menu-card-img {
+    width: 100%; height: 130px;
+    object-fit: cover;
+    display: block;
+    background: rgb(20,24,42);
+  }
+  .menu-card-body { padding: 12px; }
+  .menu-card-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; color: var(--text-primary); }
+  .menu-card-cat  { font-size: 0.72rem; color: var(--sky-azure); letter-spacing: 1px; text-transform: uppercase; }
+  .menu-card-price{ font-size: 1rem; font-weight: 800; color: var(--electric-gold); margin-top: 8px; }
+  .menu-card-actions { display: flex; gap: 6px; padding: 10px 12px; border-top: 1px solid var(--border-subtle); }
+
+  /* ── GALLERY GRID ── */
+  .gallery-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    padding: 20px;
+  }
+  .gallery-admin-item {
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 4/3;
+    border: 1px solid var(--border-subtle);
+  }
+  .gallery-admin-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+  .gallery-admin-item:hover img { transform: scale(1.08); }
+  .gallery-admin-item .g-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent 50%);
+    display: flex; flex-direction: column; align-items: flex-start;
+    justify-content: flex-end;
+    padding: 10px;
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .gallery-admin-item:hover .g-overlay { opacity: 1; }
+  .gallery-admin-item .g-overlay span { font-size: 0.72rem; color: white; font-weight: 600; }
+  .gallery-admin-item .g-actions { display: flex; gap: 5px; margin-top: 6px; }
+
+  /* ── CHEF CARDS ── */
+  .chef-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  .chef-admin-card {
+    background: var(--dark-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .chef-admin-card:hover { transform: translateY(-4px); }
+  .chef-admin-card img { width: 100%; height: 160px; object-fit: cover; display: block; }
+  .chef-admin-card .chef-name  { font-size: 1rem; font-weight: 700; margin: 14px 10px 4px; color: var(--text-primary); }
+  .chef-admin-card .chef-title { font-size: 0.75rem; color: var(--electric-gold); letter-spacing: 1px; text-transform: uppercase; }
+  .chef-admin-card .chef-actions { display: flex; gap: 8px; padding: 12px 14px; justify-content: center; }
+
+  /* ── TABLE MAP ── */
+  .table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    padding: 20px;
+  }
+  .table-card {
+    background: var(--dark-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.25s ease;
+  }
+  .table-card:hover { transform: translateY(-3px); }
+  .table-num { font-size: 1.8rem; font-weight: 900; }
+  .table-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+  .table-info  { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; letter-spacing: 0.5px; }
+  .table-status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ts-free     { background: rgba(0,230,160,0.15); color: var(--neon-mint); border: 1px solid rgba(0,230,160,0.3); }
+  .ts-occupied { background: rgba(255,94,87,0.15);  color: var(--sunset-coral); border: 1px solid rgba(255,94,87,0.3); }
+  .ts-cleaning { background: rgba(255,198,0,0.15);  color: var(--electric-gold); border: 1px solid rgba(255,198,0,0.3); }
+  .ts-reserved { background: rgba(165,94,234,0.15); color: var(--royal-violet); border: 1px solid rgba(165,94,234,0.3); }
+  .table-card-actions { display: flex; gap: 5px; justify-content: center; margin-top: 10px; }
+
+  /* ── POS QUICK LAUNCH ── */
+  .pos-launch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 20px;
+  }
+  .pos-launch-card {
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--border-subtle);
+    display: block;
+  }
+  .pos-launch-card:hover { transform: translateY(-5px); }
+  .pos-launch-card i { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+  .pos-launch-card .plc-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .pos-launch-card .plc-desc  { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── MESSAGES ── */
+  .msg-item {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .msg-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--rose-pink), var(--royal-violet));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+  }
+  .msg-name    { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+  .msg-subject { font-size: 0.78rem; color: var(--electric-gold); margin: 2px 0; }
+  .msg-body    { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+  .msg-time    { font-size: 0.72rem; color: var(--text-dim); margin-left: auto; white-space: nowrap; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--text-dim); }
+  .empty-state i { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* ── MODAL STYLES ── */
+  .modal-content {
+    background: var(--dark-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    color: var(--text-primary);
+  }
+  .modal-header {
+    padding: 24px 28px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .modal-title { font-weight: 700; font-size: 1.1rem; }
+  .modal-body { padding: 24px 28px; }
+  .modal-footer {
+    padding: 16px 28px 24px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .form-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .form-control, .form-select {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    transition: border-color 0.2s ease;
+  }
+  .form-control:focus, .form-select:focus {
+    background: var(--card-bg);
+    border-color: var(--electric-gold);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 3px rgba(255,198,0,0.1);
+  }
+  .form-control::placeholder { color: var(--text-dim); }
+  .form-check-input { background-color: var(--card-bg); border-color: rgba(255,255,255,0.2); }
+  .form-check-input:checked { background-color: var(--electric-gold); border-color: var(--electric-gold); }
+  .form-check-label { font-size: 0.85rem; color: var(--text-muted); }
+  .btn-modal-save {
+    background: linear-gradient(135deg, var(--electric-gold), var(--tangerine));
+    color: rgb(0,0,0);
+    border: none;
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-modal-save:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-modal-cancel {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-muted);
+    border: 1px solid var(--border-subtle);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-modal-cancel:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+  .modal-backdrop.show { opacity: 0.75; background: rgb(0,0,0); }
+
+  /* ── MOBILE TOGGLE ── */
+  .sidebar-toggle {
+    display: none;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  @media (max-width: 991px) {
+    .admin-sidebar { transform: translateX(-260px); }
+    .admin-sidebar.open { transform: translateX(0); }
+    .admin-main { margin-left: 0; }
+    .sidebar-toggle { display: block; }
+    .admin-topbar { padding: 14px 20px; }
+    .admin-content { padding: 20px 16px; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 576px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card { padding: 18px 14px; }
+    .stat-card .stat-value { font-size: 1.8rem; }
+    .menu-grid { grid-template-columns: 1fr; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--deep-navy); }
+  ::-webkit-scrollbar-thumb { background: rgb(50, 60, 90); border-radius: 3px; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up   { animation: fadeInUp 0.5s ease both; }
+  .fade-up-1 { animation-delay: 0.05s; }
+  .fade-up-2 { animation-delay: 0.1s; }
+  .fade-up-3 { animation-delay: 0.15s; }
+  .fade-up-4 { animation-delay: 0.2s; }
+  .fade-up-5 { animation-delay: 0.25s; }
+  .fade-up-6 { animation-delay: 0.3s; }
+  .fade-up-7 { animation-delay: 0.35s; }
+  .fade-up-8 { animation-delay: 0.4s; }
+  .fade-up-9 { animation-delay: 0.45s; }
+  .fade-up-10 { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-brand">
+    <div class="brand-name">AURA</div>
+    <div class="brand-sub">Admin Console v2.0</div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="sidebar-section-title">Overview</div>
+    <a href="#overview" class="sidebar-link active" onclick="showSection('overview',this)">
+      <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+    <a href="#reservations" class="sidebar-link" onclick="showSection('reservations',this)">
+      <i class="bi bi-calendar-check"></i> Reservations
+      {% if pending_count > 0 %}
+        <span class="ms-auto badge" style="background:rgb(255,94,87);color:white;border-radius:10px;padding:2px 8px;font-size:0.7rem;">{{ pending_count }}</span>
+      {% endif %}
+    </a>
+    <a href="#customers" class="sidebar-link" onclick="showSection('customers',this)">
+      <i class="bi bi-people"></i> Customers
+    </a>
+
+    <div class="sidebar-section-title">Content</div>
+    <a href="#menu-mgmt" class="sidebar-link" onclick="showSection('menu-mgmt',this)">
+      <i class="bi bi-journal-richtext"></i> Menu Items
+    </a>
+    <a href="#gallery-mgmt" class="sidebar-link" onclick="showSection('gallery-mgmt',this)">
+      <i class="bi bi-images"></i> Gallery
+    </a>
+    <a href="#chefs-mgmt" class="sidebar-link" onclick="showSection('chefs-mgmt',this)">
+      <i class="bi bi-person-badge"></i> Chefs
+    </a>
+    <a href="#tables-mgmt" class="sidebar-link" onclick="showSection('tables-mgmt',this)">
+      <i class="bi bi-grid-3x3-gap"></i> Dining Tables
+    </a>
+
+    <div class="sidebar-section-title">POS & Kitchen</div>
+    <a href="/pos/" class="sidebar-link pos-link" target="_blank">
+      <i class="bi bi-tablet-landscape"></i> POS — Table Orders
+    </a>
+    <a href="/kitchen/" class="sidebar-link kitchen-link" target="_blank">
+      <i class="bi bi-fire"></i> Kitchen Display
+    </a>
+
+    <div class="sidebar-section-title">Communications</div>
+    <a href="#messages" class="sidebar-link" onclick="showSection('messages',this)">
+      <i class="bi bi-envelope"></i> Messages
+      {% if total_messages > 0 %}
+        <span class="ms-auto badge" style="background:rgb(255,100,180);color:white;border-radius:10px;padding:2px 8px;font-size:0.7rem;">{{ total_messages }}</span>
+      {% endif %}
+    </a>
+
+    <div class="sidebar-section-title">System</div>
+    <a href="/admin/" class="sidebar-link" target="_blank">
+      <i class="bi bi-wrench-adjustable"></i> Django Admin
+    </a>
+    <a href="/" class="sidebar-link">
+      <i class="bi bi-globe"></i> View Website
+    </a>
+    <a href="/logout/" class="sidebar-link danger">
+      <i class="bi bi-box-arrow-right"></i> Sign Out
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="d-flex align-items-center gap-3">
+      <div class="admin-avatar">{{ request.user.username|first|upper }}</div>
+      <div>
+        <div style="font-size:0.88rem;font-weight:600;">{{ request.user.get_full_name|default:request.user.username }}</div>
+        <div style="font-size:0.72rem;color:rgb(0,230,160);">● Online  •  {% if request.user.is_superuser %}Superuser{% else %}Staff{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="admin-main">
+
+  <!-- TOPBAR -->
+  <div class="admin-topbar">
+    <div class="d-flex align-items-center" style="gap:16px;">
+      <button class="sidebar-toggle" onclick="document.getElementById('adminSidebar').classList.toggle('open')">
+        <i class="bi bi-list"></i>
+      </button>
+      <span class="topbar-title" id="topbarTitle">Dashboard Overview</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="topbar-badge">AURA CONSOLE v2.0</div>
+      <span style="font-size:0.8rem;color:rgb(148,163,184);">{{ request.user.username }}</span>
+    </div>
+  </div>
+
+  <!-- CONTENT SECTIONS -->
+  <div class="admin-content">
+
+    <!-- FLASH MESSAGES -->
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert alert-dismissible fade show mb-4"
+             style="background:rgba(0,230,160,0.1);border:1px solid rgba(0,230,160,0.3);color:rgb(0,230,160);border-radius:12px;"
+             role="alert">
+          <i class="bi bi-check-circle me-2"></i>{{ msg }}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- ════ OVERVIEW ════ -->
+    <div id="section-overview" class="section-panel">
+      <div class="mb-4">
+        <h4 class="fw-bold mb-1" style="color:rgb(241,245,249);">Welcome back, {{ request.user.first_name|default:request.user.username }} 👋</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">Here's what's happening at AURA today.</p>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="stat-grid">
+        <div class="stat-card coral fade-up fade-up-1">
+          <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+          <div class="stat-value">{{ total_reservations }}</div>
+          <div class="stat-label">Total Reservations</div>
+        </div>
+        <div class="stat-card gold fade-up fade-up-2">
+          <div class="stat-icon"><i class="bi bi-clock"></i></div>
+          <div class="stat-value">{{ pending_count }}</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card mint fade-up fade-up-3">
+          <div class="stat-icon"><i class="bi bi-check-circle"></i></div>
+          <div class="stat-value">{{ confirmed_count }}</div>
+          <div class="stat-label">Confirmed</div>
+        </div>
+        <div class="stat-card azure fade-up fade-up-4">
+          <div class="stat-icon"><i class="bi bi-egg-fried"></i></div>
+          <div class="stat-value">{{ total_menu_items }}</div>
+          <div class="stat-label">Menu Items</div>
+        </div>
+        <div class="stat-card violet fade-up fade-up-5">
+          <div class="stat-icon"><i class="bi bi-images"></i></div>
+          <div class="stat-value">{{ total_gallery }}</div>
+          <div class="stat-label">Gallery Images</div>
+        </div>
+        <div class="stat-card orange fade-up fade-up-6">
+          <div class="stat-icon"><i class="bi bi-person-badge"></i></div>
+          <div class="stat-value">{{ total_chefs }}</div>
+          <div class="stat-label">Chefs</div>
+        </div>
+        <div class="stat-card rose fade-up fade-up-7">
+          <div class="stat-icon"><i class="bi bi-envelope"></i></div>
+          <div class="stat-value">{{ total_messages }}</div>
+          <div class="stat-label">Messages</div>
+        </div>
+        <div class="stat-card lime fade-up fade-up-8">
+          <div class="stat-icon"><i class="bi bi-people"></i></div>
+          <div class="stat-value">{{ total_customers }}</div>
+          <div class="stat-label">Customers</div>
+        </div>
+        <div class="stat-card magenta fade-up fade-up-9">
+          <div class="stat-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+          <div class="stat-value">{{ total_tables|default:"0" }}</div>
+          <div class="stat-label">Dining Tables</div>
+        </div>
+        <div class="stat-card cyan fade-up fade-up-10">
+          <div class="stat-icon"><i class="bi bi-receipt"></i></div>
+          <div class="stat-value">{{ orders_open|default:"0" }}</div>
+          <div class="stat-label">Open Orders</div>
+        </div>
+      </div>
+
+      <!-- POS QUICK LAUNCH -->
+      <div class="admin-panel fade-up mb-4">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="dot" style="background:rgb(0,230,160);"></span>
+            Quick Launch — POS & Kitchen
+          </div>
+        </div>
+        <div class="pos-launch-grid">
+          <a href="/pos/" target="_blank" class="pos-launch-card" style="background:rgba(0,230,160,0.07);border-color:rgba(0,230,160,0.2);">
+            <i class="bi bi-tablet-landscape" style="color:var(--neon-mint);"></i>
+            <div class="plc-title">POS — Table Map</div>
+            <div class="plc-desc">Open table orders, add food, send to kitchen</div>
+          </a>
+          <a href="/kitchen/" target="_blank" class="pos-launch-card" style="background:rgba(255,140,0,0.07);border-color:rgba(255,140,0,0.2);">
+            <i class="bi bi-fire" style="color:var(--tangerine);"></i>
+            <div class="plc-title">Kitchen Display</div>
+            <div class="plc-desc">Live order queue with prep timers, mark ready</div>
+          </a>
+          <a href="#tables-mgmt" onclick="showSection('tables-mgmt',null)" class="pos-launch-card" style="background:rgba(165,94,234,0.07);border-color:rgba(165,94,234,0.2);">
+            <i class="bi bi-grid-3x3-gap" style="color:var(--royal-violet);"></i>
+            <div class="plc-title">Table Management</div>
+            <div class="plc-desc">Add, edit, or remove dining tables</div>
+          </a>
+          <a href="#menu-mgmt" onclick="showSection('menu-mgmt',null)" class="pos-launch-card" style="background:rgba(15,188,249,0.07);border-color:rgba(15,188,249,0.2);">
+            <i class="bi bi-journal-richtext" style="color:var(--sky-azure);"></i>
+            <div class="plc-title">Menu Management</div>
+            <div class="plc-desc">Add or edit food items with meal type & prep time</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- RECENT RESERVATIONS -->
+      <div class="admin-panel fade-up">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="dot" style="background:rgb(255,198,0);"></span>
+            Recent Reservations
+          </div>
+          <button class="btn-add gold" onclick="showSection('reservations', null)">View All →</button>
+        </div>
+        <div class="panel-body">
+          {% if reservations %}
+            <table class="admin-table">
+              <thead><tr><th>Guest</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th><th>User</th></tr></thead>
+              <tbody>
+                {% for r in reservations|slice:":8" %}
+                <tr>
+                  <td><strong>{{ r.name }}</strong></td>
+                  <td class="muted">{{ r.date }}</td>
+                  <td class="muted">{{ r.time }}</td>
+                  <td class="muted">{{ r.guests }} pax</td>
+                  <td><span class="status-badge {{ r.status|lower }}">{{ r.get_status_display }}</span></td>
+                  <td class="muted">{% if r.user %}{{ r.user.username }}{% else %}Guest{% endif %}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="empty-state"><i class="bi bi-calendar-x" style="color:rgb(100,116,139);"></i><p>No reservations yet.</p></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- RECENT MESSAGES -->
+      <div class="admin-panel fade-up">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(255,100,180);"></span> Recent Messages</div>
+          <button class="btn-add mint" onclick="showSection('messages', null)">View All →</button>
+        </div>
+        <div class="panel-body">
+          {% if contact_messages %}
+            {% for msg in contact_messages|slice:":5" %}
+            <div class="msg-item">
+              <div class="msg-avatar">{{ msg.name|first|upper }}</div>
+              <div style="flex:1;min-width:0;">
+                <div class="msg-name">{{ msg.name }} <span style="font-size:0.75rem;color:rgb(148,163,184);font-weight:400;">— {{ msg.email }}</span></div>
+                <div class="msg-subject">{{ msg.subject }}</div>
+                <div class="msg-body">{{ msg.message|truncatechars:120 }}</div>
+              </div>
+              <div class="msg-time">{{ msg.created_at|date:"d M" }}</div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state"><i class="bi bi-inbox" style="color:rgb(100,116,139);"></i><p>No messages yet.</p></div>
+          {% endif %}
+        </div>
+      </div>
+    </div><!-- /overview -->
+
+
+    <!-- ════ RESERVATIONS ════ -->
+    <div id="section-reservations" class="section-panel" style="display:none;">
+      <div class="mb-4">
+        <h4 class="fw-bold" style="color:rgb(241,245,249);">All Reservations</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">{{ total_reservations }} total • {{ pending_count }} pending • {{ confirmed_count }} confirmed</p>
+      </div>
+      <div class="admin-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(255,94,87);"></span> Reservation Log</div>
+        </div>
+        <div class="panel-body" style="overflow-x:auto;">
+          {% if reservations %}
+            <table class="admin-table">
+              <thead><tr><th>#</th><th>Guest</th><th>Email</th><th>Phone</th><th>Date</th><th>Time</th><th>Guests</th><th>Occasion</th><th>Seating</th><th>Status</th><th>User</th><th>Booked On</th></tr></thead>
+              <tbody>
+                {% for r in reservations %}
+                <tr>
+                  <td class="muted">{{ forloop.counter }}</td>
+                  <td><strong>{{ r.name }}</strong></td>
+                  <td class="muted" style="font-size:0.8rem;">{{ r.email }}</td>
+                  <td class="muted" style="font-size:0.8rem;">{{ r.phone }}</td>
+                  <td class="muted">{{ r.date }}</td>
+                  <td class="muted">{{ r.time }}</td>
+                  <td class="muted">{{ r.guests }} pax</td>
+                  <td class="muted" style="font-size:0.8rem;">{{ r.occasion|default:"—" }}</td>
+                  <td class="muted" style="font-size:0.8rem;">{{ r.seating_area }}</td>
+                  <td><span class="status-badge {{ r.status|lower }}">{{ r.get_status_display }}</span></td>
+                  <td class="muted" style="font-size:0.8rem;color:rgb(15,188,249);">{% if r.user %}{{ r.user.username }}{% else %}Guest{% endif %}</td>
+                  <td class="muted" style="font-size:0.78rem;">{{ r.created_at|date:"d M Y, H:i" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="empty-state"><i class="bi bi-calendar-x" style="color:rgb(100,116,139);"></i><p>No reservations yet.</p></div>
+          {% endif %}
+        </div>
+      </div>
+    </div><!-- /reservations -->
+
+
+    <!-- ════ CUSTOMERS ════ -->
+    <div id="section-customers" class="section-panel" style="display:none;">
+      <div class="mb-4">
+        <h4 class="fw-bold" style="color:rgb(241,245,249);">Registered Customers</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">{{ total_customers }} guest accounts</p>
+      </div>
+      <div class="admin-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(80,230,100);"></span> Customer Accounts</div>
+        </div>
+        <div class="panel-body" style="overflow-x:auto;">
+          {% if customers %}
+            <table class="admin-table">
+              <thead><tr><th>#</th><th>Username</th><th>Full Name</th><th>Email</th><th>Joined</th><th>Reservations</th><th>Last Login</th></tr></thead>
+              <tbody>
+                {% for c in customers %}
+                <tr>
+                  <td class="muted">{{ forloop.counter }}</td>
+                  <td style="color:rgb(15,188,249);font-weight:600;">{{ c.username }}</td>
+                  <td>{{ c.get_full_name|default:"—" }}</td>
+                  <td class="muted" style="font-size:0.82rem;">{{ c.email }}</td>
+                  <td class="muted" style="font-size:0.8rem;">{{ c.date_joined|date:"d M Y" }}</td>
+                  <td><span style="background:rgba(165,94,234,0.15);color:rgb(165,94,234);padding:3px 10px;border-radius:12px;font-size:0.78rem;font-weight:600;">{{ c.reservations.count }}</span></td>
+                  <td class="muted" style="font-size:0.78rem;">{% if c.last_login %}{{ c.last_login|date:"d M Y, H:i" }}{% else %}Never{% endif %}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="empty-state"><i class="bi bi-people" style="color:rgb(100,116,139);"></i><p>No customer accounts yet.</p></div>
+          {% endif %}
+        </div>
+      </div>
+    </div><!-- /customers -->
+
+
+    <!-- ════ MENU MANAGEMENT ════ -->
+    <div id="section-menu-mgmt" class="section-panel" style="display:none;">
+      <div class="mb-4">
+        <h4 class="fw-bold" style="color:rgb(241,245,249);">Menu Items</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">{{ total_menu_items }} items across all categories</p>
+      </div>
+      <div class="admin-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(15,188,249);"></span> All Menu Items</div>
+          <button class="btn-add gold" data-bs-toggle="modal" data-bs-target="#addMenuModal">
+            <i class="bi bi-plus-lg"></i> Add Menu Item
+          </button>
+        </div>
+        {% if menu_items %}
+          <div class="menu-grid">
+            {% for item in menu_items %}
+              <div class="menu-card">
+                {% if item.image %}
+                  <img src="{{ item.image.url }}" alt="{{ item.name }}" class="menu-card-img">
+                {% else %}
+                  <div class="menu-card-img d-flex align-items-center justify-content-center" style="color:rgb(100,116,139);">
+                    <i class="bi bi-egg-fried" style="font-size:1.5rem;"></i>
+                  </div>
+                {% endif %}
+                <div class="menu-card-body">
+                  <div class="menu-card-name">{{ item.name }}</div>
+                  <div class="menu-card-cat">{{ item.category.name }}</div>
+                  <div class="d-flex flex-wrap gap-1 mt-2">
+                    <span class="meal-badge meal-{{ item.meal_type }}">{{ item.get_meal_type_display }}</span>
+                    {% if item.is_veg %}<span class="meal-badge" style="background:rgba(0,230,160,0.15);color:rgb(0,230,160);">🌿 Veg</span>{% endif %}
+                    {% if item.is_spicy %}<span class="meal-badge" style="background:rgba(255,94,87,0.15);color:rgb(255,94,87);">🌶 Spicy</span>{% endif %}
+                    {% if item.is_chef_special %}<span class="meal-badge" style="background:rgba(255,198,0,0.15);color:rgb(255,198,0);">★ Chef</span>{% endif %}
+                  </div>
+                  <div class="menu-card-price">₹{{ item.price }}
+                    {% if item.prep_time_minutes %}<span style="font-size:0.72rem;color:var(--text-muted);font-weight:400;margin-left:6px;"><i class="bi bi-clock"></i> {{ item.prep_time_minutes }}min</span>{% endif %}
+                  </div>
+                </div>
+                <div class="menu-card-actions">
+                  <a href="{% url 'admin_edit_menu_item' item.pk %}" class="btn-icon edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <form method="post" action="{% url 'admin_delete_menu_item' item.pk %}" style="display:inline;" onsubmit="return confirm('Delete {{ item.name }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-icon delete" title="Delete"><i class="bi bi-trash"></i></button>
+                  </form>
+                  <span style="font-size:0.72rem;color:var(--text-dim);margin-left:auto;align-self:center;">
+                    {% if item.is_available %}<span style="color:rgb(0,230,160);">● Live</span>{% else %}<span style="color:rgb(255,94,87);">● Hidden</span>{% endif %}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state"><i class="bi bi-egg-fried" style="color:rgb(100,116,139);"></i><p>No menu items yet. Add your first item!</p></div>
+        {% endif %}
+      </div>
+    </div><!-- /menu-mgmt -->
+
+
+    <!-- ════ GALLERY MANAGEMENT ════ -->
+    <div id="section-gallery-mgmt" class="section-panel" style="display:none;">
+      <div class="mb-4">
+        <h4 class="fw-bold" style="color:rgb(241,245,249);">Gallery Management</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">{{ total_gallery }} images in the gallery</p>
+      </div>
+      <div class="admin-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(165,94,234);"></span> Gallery Images</div>
+          <button class="btn-add violet" data-bs-toggle="modal" data-bs-target="#addGalleryModal">
+            <i class="bi bi-plus-lg"></i> Add Image
+          </button>
+        </div>
+        {% if gallery_images %}
+          <div class="gallery-admin-grid">
+            {% for img in gallery_images %}
+              <div class="gallery-admin-item">
+                <img src="{{ img.image.url }}" alt="{{ img.title }}">
+                <div class="g-overlay">
+                  <span>{{ img.title }}</span>
+                  <div class="g-actions">
+                    <a href="{% url 'admin_edit_gallery' img.pk %}" class="btn-icon edit" title="Edit" style="width:26px;height:26px;font-size:0.72rem;"><i class="bi bi-pencil"></i></a>
+                    <form method="post" action="{% url 'admin_delete_gallery' img.pk %}" style="display:inline;" onsubmit="return confirm('Delete this image?');">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-icon delete" title="Delete" style="width:26px;height:26px;font-size:0.72rem;"><i class="bi bi-trash"></i></button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state"><i class="bi bi-images" style="color:rgb(100,116,139);"></i><p>No gallery images yet. Upload your first image!</p></div>
+        {% endif %}
+      </div>
+    </div><!-- /gallery-mgmt -->
+
+
+    <!-- ════ CHEFS ════ -->
+    <div id="section-chefs-mgmt" class="section-panel" style="display:none;">
+      <div class="mb-4">
+        <h4 class="fw-bold" style="color:rgb(241,245,249);">Chef Team</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">{{ total_chefs }} culinary artists</p>
+      </div>
+      <div class="admin-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(255,140,0);"></span> Culinary Team</div>
+          <button class="btn-add orange" data-bs-toggle="modal" data-bs-target="#addChefModal">
+            <i class="bi bi-plus-lg"></i> Add Chef
+          </button>
+        </div>
+        {% if chefs %}
+          <div class="chef-admin-grid">
+            {% for chef in chefs %}
+              <div class="chef-admin-card">
+                {% if chef.image %}
+                  <img src="{{ chef.image.url }}" alt="{{ chef.name }}">
+                {% else %}
+                  <div style="height:160px;background:rgb(20,24,42);display:flex;align-items:center;justify-content:center;color:rgb(100,116,139);">
+                    <i class="bi bi-person-circle" style="font-size:2rem;"></i>
+                  </div>
+                {% endif %}
+                <div class="chef-name">{{ chef.name }}</div>
+                <div class="chef-title">{{ chef.title }}</div>
+                <div style="font-size:0.78rem;color:rgb(148,163,184);padding:0 14px;margin-top:8px;line-height:1.5;">{{ chef.bio|truncatechars:80 }}</div>
+                <div class="chef-actions">
+                  <a href="{% url 'admin_edit_chef' chef.pk %}" class="btn-icon edit" title="Edit"><i class="bi bi-pencil"></i></a>
+                  <form method="post" action="{% url 'admin_delete_chef' chef.pk %}" style="display:inline;" onsubmit="return confirm('Delete {{ chef.name }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-icon delete" title="Delete"><i class="bi bi-trash"></i></button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state"><i class="bi bi-person-badge" style="color:rgb(100,116,139);"></i><p>No chefs added yet.</p></div>
+        {% endif %}
+      </div>
+    </div><!-- /chefs-mgmt -->
+
+
+    <!-- ════ DINING TABLES ════ -->
+    <div id="section-tables-mgmt" class="section-panel" style="display:none;">
+      <div class="mb-4">
+        <h4 class="fw-bold" style="color:rgb(241,245,249);">Dining Tables</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">{{ total_tables|default:"0" }} tables configured • <a href="/pos/" target="_blank" style="color:rgb(0,230,160);">Open POS →</a></p>
+      </div>
+      <div class="admin-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(255,0,128);"></span> Table Map</div>
+          <button class="btn-add mint" data-bs-toggle="modal" data-bs-target="#addTableModal">
+            <i class="bi bi-plus-lg"></i> Add Table
+          </button>
+        </div>
+        {% if dining_tables %}
+          <div class="table-grid">
+            {% for t in dining_tables %}
+              <div class="table-card">
+                <div class="table-num" style="color:{% if t.status == 'free' %}rgb(0,230,160){% elif t.status == 'occupied' %}rgb(255,94,87){% elif t.status == 'cleaning' %}rgb(255,198,0){% else %}rgb(165,94,234){% endif %};">{{ t.number }}</div>
+                <div class="table-label">{{ t.label|default:"Table" }}</div>
+                <div class="table-info">{{ t.capacity }} seats • {{ t.section|default:"Main" }}</div>
+                <div><span class="table-status ts-{{ t.status }}">{{ t.get_status_display }}</span></div>
+                <div class="table-card-actions">
+                  <form method="post" action="{% url 'admin_manage_tables' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="table_id" value="{{ t.pk }}">
+                    <button type="submit" class="btn-icon delete" title="Delete Table" onclick="return confirm('Delete Table {{ t.number }}?');">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <i class="bi bi-grid-3x3-gap" style="color:rgb(100,116,139);"></i>
+            <p>No tables yet. Add your first table or <button onclick="bulkCreateTables()" style="background:rgba(0,230,160,0.15);color:rgb(0,230,160);border:1px solid rgba(0,230,160,0.4);border-radius:8px;padding:4px 12px;font-size:0.82rem;cursor:pointer;">Auto-Create 10 Tables</button></p>
+          </div>
+        {% endif %}
+      </div>
+    </div><!-- /tables-mgmt -->
+
+
+    <!-- ════ MESSAGES ════ -->
+    <div id="section-messages" class="section-panel" style="display:none;">
+      <div class="mb-4">
+        <h4 class="fw-bold" style="color:rgb(241,245,249);">Contact Messages</h4>
+        <p style="color:rgb(148,163,184);font-size:0.9rem;">{{ total_messages }} messages received</p>
+      </div>
+      <div class="admin-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="dot" style="background:rgb(255,100,180);"></span> Inbox — All Messages</div>
+        </div>
+        <div class="panel-body">
+          {% if contact_messages %}
+            {% for msg in contact_messages %}
+            <div class="msg-item">
+              <div class="msg-avatar">{{ msg.name|first|upper }}</div>
+              <div style="flex:1;min-width:0;">
+                <div class="msg-name">{{ msg.name }} <span style="font-size:0.75rem;color:rgb(148,163,184);font-weight:400;margin-left:8px;">{{ msg.email }}</span>
+                  {% if msg.phone %}<span style="font-size:0.72rem;color:rgb(100,116,139);margin-left:8px;">{{ msg.phone }}</span>{% endif %}
+                </div>
+                <div class="msg-subject">{{ msg.subject }}</div>
+                <div class="msg-body">{{ msg.message }}</div>
+              </div>
+              <div class="msg-time">{{ msg.created_at|date:"d M Y, H:i" }}</div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state"><i class="bi bi-inbox" style="color:rgb(100,116,139);"></i><p>No messages yet.</p></div>
+          {% endif %}
+        </div>
+      </div>
+    </div><!-- /messages -->
+
+  </div><!-- /admin-content -->
+</div><!-- /admin-main -->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════════════ -->
+
+<!-- ADD MENU ITEM MODAL -->
+<div class="modal fade" id="addMenuModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <form method="post" action="{% url 'admin_add_menu_item' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-plus-circle me-2" style="color:rgb(255,198,0);"></i> Add Menu Item</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label">Item Name *</label>
+              <input type="text" name="name" class="form-control" placeholder="e.g. Chettinad Pepper Chicken" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Price (₹) *</label>
+              <input type="number" name="price" class="form-control" placeholder="450" step="0.01" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Category *</label>
+              <select name="category" class="form-select" required>
+                <option value="">— Select Category —</option>
+                {% for cat in categories %}
+                  <option value="{{ cat.pk }}">{{ cat.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Meal Type *</label>
+              <select name="meal_type" class="form-select" required>
+                <option value="all_day">All Day</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="snacks">Snacks</option>
+                <option value="dinner">Dinner</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Prep Time (minutes)</label>
+              <input type="number" name="prep_time_minutes" class="form-control" placeholder="20" min="1" max="120">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Serve Unit</label>
+              <input type="text" name="serve_unit" class="form-control" placeholder="plate / piece / glass">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Dietary Tag</label>
+              <input type="text" name="dietary_tag" class="form-control" placeholder="Vegan / Jain / Halal …">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea name="description" class="form-control" rows="3" placeholder="Describe the dish…"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Image</label>
+              <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+            <div class="col-12 d-flex flex-wrap gap-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_veg" id="addIsVeg">
+                <label class="form-check-label" for="addIsVeg">🌿 Vegetarian</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_spicy" id="addIsSpicy">
+                <label class="form-check-label" for="addIsSpicy">🌶 Spicy</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_chef_special" id="addIsChef">
+                <label class="form-check-label" for="addIsChef">★ Chef's Special</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="is_available" id="addIsAvail" checked>
+                <label class="form-check-label" for="addIsAvail">✅ Available / Live</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn-modal-save"><i class="bi bi-check-lg me-1"></i> Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CHEF MODAL -->
+<div class="modal fade" id="addChefModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <form method="post" action="{% url 'admin_add_chef' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-plus-circle me-2" style="color:rgb(255,140,0);"></i> Add Chef</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Chef Name *</label>
+              <input type="text" name="name" class="form-control" placeholder="e.g. Chef Muruganantham" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Title / Role *</label>
+              <input type="text" name="title" class="form-control" placeholder="e.g. Head Chef · Chettinad Specialist" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Display Order</label>
+              <input type="number" name="display_order" class="form-control" placeholder="1" min="0">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Bio</label>
+              <textarea name="bio" class="form-control" rows="4" placeholder="Chef's background and speciality…"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Photo</label>
+              <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn-modal-save"><i class="bi bi-check-lg me-1"></i> Save Chef</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ADD GALLERY IMAGE MODAL -->
+<div class="modal fade" id="addGalleryModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <form method="post" action="{% url 'admin_add_gallery' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-plus-circle me-2" style="color:rgb(165,94,234);"></i> Add Gallery Image</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Title *</label>
+              <input type="text" name="title" class="form-control" placeholder="e.g. Banana Leaf Grand Feast" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Category</label>
+              <select name="category" class="form-select">
+                <option value="interior">Interior</option>
+                <option value="dishes">Dishes</option>
+                <option value="drinks">Drinks</option>
+                <option value="patio">Patio / Terrace</option>
+                <option value="events">Events</option>
+                <option value="team">Team</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Display Order</label>
+              <input type="number" name="display_order" class="form-control" placeholder="1" min="0">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <input type="text" name="description" class="form-control" placeholder="Short caption…">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Image *</label>
+              <input type="file" name="image" class="form-control" accept="image/*" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn-modal-save"><i class="bi bi-check-lg me-1"></i> Upload Image</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TABLE MODAL -->
+<div class="modal fade" id="addTableModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'admin_manage_tables' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-plus-circle me-2" style="color:rgb(0,230,160);"></i> Add Dining Table</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Table Number *</label>
+              <input type="number" name="number" class="form-control" placeholder="11" min="1" required>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Label (optional)</label>
+              <input type="text" name="label" class="form-control" placeholder="e.g. Garden View Table">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Capacity *</label>
+              <input type="number" name="capacity" class="form-control" placeholder="4" min="1" max="20" required>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Section</label>
+              <select name="section" class="form-select">
+                <option value="Main Hall">Main Hall</option>
+                <option value="Garden Terrace">Garden Terrace</option>
+                <option value="Private Dining">Private Dining</option>
+                <option value="Lounge Bar">Lounge Bar</option>
+                <option value="Rooftop">Rooftop</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notes</label>
+              <input type="text" name="notes" class="form-control" placeholder="e.g. Near window, wheelchair accessible">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn-modal-save"><i class="bi bi-check-lg me-1"></i> Add Table</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ── Section Navigation ──────────────────────────────────
+  function showSection(id, linkEl) {
+    document.querySelectorAll('.section-panel').forEach(el => el.style.display = 'none');
+    const target = document.getElementById('section-' + id);
+    if (target) target.style.display = 'block';
+
+    document.querySelectorAll('.sidebar-link').forEach(a => a.classList.remove('active'));
+    if (linkEl) linkEl.classList.add('active');
+
+    const titles = {
+      'overview':      'Dashboard Overview',
+      'reservations':  'All Reservations',
+      'customers':     'Customer Accounts',
+      'menu-mgmt':     'Menu Management',
+      'gallery-mgmt':  'Gallery Management',
+      'chefs-mgmt':    'Chef Team',
+      'tables-mgmt':   'Dining Tables',
+      'messages':      'Contact Messages',
+    };
+    const tb = document.getElementById('topbarTitle');
+    if (tb) tb.textContent = titles[id] || 'Admin Console';
+
+    document.getElementById('adminSidebar').classList.remove('open');
+    return false;
+  }
+
+  // ── Counter Animation ───────────────────────────────────
+  document.querySelectorAll('.stat-value').forEach(el => {
+    const target = parseInt(el.textContent) || 0;
+    if (target === 0) return;
+    let count = 0;
+    const duration = 800;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      count = Math.min(count + step, target);
+      el.textContent = Math.round(count);
+      if (count >= target) clearInterval(timer);
+    }, 16);
+  });
+
+  // ── Mobile Sidebar Close ────────────────────────────────
+  document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('adminSidebar');
+    const toggle = document.querySelector('.sidebar-toggle');
+    if (!sidebar || !toggle) return;
+    if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  });
+
+  // ── Auto-create 10 tables (via hidden form) ─────────────
+  function bulkCreateTables() {
+    if (!confirm('Auto-create 10 dining tables (1–10)?')) return;
+    const f = document.createElement('form');
+    f.method = 'POST';
+    f.action = '{% url "admin_manage_tables" %}';
+    f.innerHTML = `
+      <input name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+      <input name="action" value="bulk_create">
+    `;
+    document.body.appendChild(f);
+    f.submit();
+  }
+
+  // ── Handle URL hash on load ─────────────────────────────
+  const hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById('section-' + hash)) {
+    showSection(hash, document.querySelector('[href="#' + hash + '"]'));
+  }
+</script>
+</body>
+</html>

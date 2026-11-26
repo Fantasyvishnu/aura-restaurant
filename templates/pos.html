@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS — Table Map | AURA</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root {
+    --bg:          rgb(9, 12, 18);
+    --panel:       rgb(16, 20, 36);
+    --card:        rgb(22, 28, 50);
+    --border:      rgba(255,255,255,0.08);
+    --gold:        rgb(255, 198, 0);
+    --coral:       rgb(255, 94, 87);
+    --mint:        rgb(0, 230, 160);
+    --azure:       rgb(15, 188, 249);
+    --violet:      rgb(165, 94, 234);
+    --orange:      rgb(255, 140, 0);
+    --rose:        rgb(255, 100, 180);
+    --lime:        rgb(80, 230, 100);
+    --text:        rgb(241, 245, 249);
+    --muted:       rgb(148, 163, 184);
+    --dim:         rgb(100, 116, 139);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  /* ── TOP BAR ── */
+  .pos-topbar {
+    background: rgb(14,18,32);
+    border-bottom: 2px solid var(--gold);
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .pos-topbar .brand { font-size: 1.4rem; font-weight: 900; letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--gold), var(--coral), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .pos-topbar .sub { font-size: 0.72rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .topbar-actions { display: flex; gap: 10px; }
+  .btn-pos { padding: 8px 18px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.5px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+    transition: all 0.25s ease; }
+  .btn-gold    { background: var(--gold); color: rgb(0,0,0); }
+  .btn-gold:hover { box-shadow: 0 6px 20px rgba(255,198,0,0.4); transform: translateY(-1px); }
+  .btn-violet  { background: rgba(165,94,234,0.15); color: var(--violet); border: 1px solid rgba(165,94,234,0.3); }
+  .btn-violet:hover { background: rgba(165,94,234,0.3); }
+  .btn-mint    { background: rgba(0,230,160,0.12); color: var(--mint); border: 1px solid rgba(0,230,160,0.3); }
+  .btn-mint:hover { background: rgba(0,230,160,0.25); }
+  .btn-coral   { background: rgba(255,94,87,0.12); color: var(--coral); border: 1px solid rgba(255,94,87,0.3); }
+  .btn-coral:hover { background: rgba(255,94,87,0.25); }
+
+  /* ── STATS ROW ── */
+  .stats-bar {
+    display: flex; gap: 12px; padding: 16px 24px;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .stat-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 18px; white-space: nowrap;
+  }
+  .stat-pill .sp-icon { font-size: 1.2rem; }
+  .stat-pill .sp-num  { font-size: 1.3rem; font-weight: 800; line-height: 1; }
+  .stat-pill .sp-lbl  { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+  /* ── ADD TABLE FORM ── */
+  .add-table-bar {
+    background: var(--panel); border-bottom: 1px solid var(--border); padding: 12px 24px;
+  }
+  .add-table-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .ati { display: flex; flex-direction: column; gap: 4px; }
+  .ati label { font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .ati input, .ati select {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text); border-radius: 8px; padding: 7px 12px; font-size: 0.85rem; outline: none;
+    min-width: 100px;
+  }
+  .ati input:focus, .ati select:focus { border-color: var(--gold); }
+  .ati select option { background: rgb(22,28,50); }
+
+  /* ── TABLE MAP ── */
+  .pos-main { padding: 24px; }
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold); margin: 24px 0 14px; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,198,0,0.2);
+  }
+  .tables-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 16px;
+  }
+  .table-card {
+    border-radius: 20px; padding: 20px 16px; cursor: pointer;
+    text-align: center; transition: all 0.3s ease; position: relative;
+    border: 2px solid var(--border); background: var(--card);
+    text-decoration: none; color: var(--text);
+  }
+  .table-card:hover { transform: translateY(-5px); color: var(--text); }
+
+  /* Status variants */
+  .table-free     { border-color: rgba(0,230,160,0.4);  }
+  .table-free:hover { box-shadow: 0 10px 30px rgba(0,230,160,0.2); }
+  .table-occupied { border-color: rgba(255,94,87,0.5); background: rgba(255,94,87,0.07); }
+  .table-occupied:hover { box-shadow: 0 10px 30px rgba(255,94,87,0.25); }
+  .table-reserved { border-color: rgba(255,198,0,0.4); background: rgba(255,198,0,0.05); }
+  .table-reserved:hover { box-shadow: 0 10px 30px rgba(255,198,0,0.2); }
+  .table-cleaning { border-color: rgba(15,188,249,0.4); background: rgba(15,188,249,0.05); }
+
+  .table-num { font-size: 2rem; font-weight: 900; line-height: 1; }
+  .table-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .table-cap  { font-size: 0.75rem; color: var(--dim); margin-top: 8px; }
+  .table-status-badge {
+    display: inline-block; margin-top: 10px; padding: 4px 12px;
+    border-radius: 20px; font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .badge-free     { background: rgba(0,230,160,0.15);  color: var(--mint); }
+  .badge-occupied { background: rgba(255,94,87,0.15);  color: var(--coral); }
+  .badge-reserved { background: rgba(255,198,0,0.15);  color: var(--gold); }
+  .badge-cleaning { background: rgba(15,188,249,0.12); color: var(--azure); }
+
+  .table-order-info { font-size: 0.75rem; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+  .table-order-total { font-size: 1rem; font-weight: 800; color: var(--gold); margin-top: 4px; }
+
+  /* Status dot pulse */
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; animation: dotPulse 2s infinite; }
+  .dot-free    { background: var(--mint); }
+  .dot-occupied{ background: var(--coral); }
+  .dot-reserved{ background: var(--gold); }
+  .dot-cleaning{ background: var(--azure); }
+  @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
+
+  /* ── MODAL: Open new order ── */
+  .modal-dark .modal-content {
+    background: var(--panel); border: 1px solid rgba(255,198,0,0.2); border-radius: 20px; color: var(--text);
+  }
+  .modal-dark .modal-header { border-bottom: 1px solid var(--border); padding: 20px 24px; }
+  .modal-dark .modal-title  { font-weight: 800; color: var(--gold); }
+  .modal-dark .modal-body   { padding: 24px; }
+  .modal-dark .modal-footer { border-top: 1px solid var(--border); padding: 16px 24px; }
+  .modal-dark .btn-close    { filter: invert(1) opacity(0.6); }
+  .form-label-dark { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
+  .form-ctrl-dark  {
+    width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text); border-radius: 10px; padding: 10px 14px; font-size: 0.9rem;
+    outline: none; transition: border-color 0.25s;
+  }
+  .form-ctrl-dark:focus { border-color: var(--gold); }
+
+  @media(max-width:600px) {
+    .pos-topbar { flex-wrap: wrap; gap: 10px; }
+    .topbar-actions { flex-wrap: wrap; }
+    .tables-grid { grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .table-num { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="pos-topbar">
+  <div>
+    <div class="brand">AURA</div>
+    <div class="sub">Point of Sale — Table Map</div>
+  </div>
+  <div class="topbar-actions">
+    <a href="{% url 'kitchen_display' %}" class="btn-pos btn-mint" target="_blank">
+      <i class="bi bi-fire"></i> Kitchen Display
+    </a>
+    <a href="{% url 'admin_dashboard' %}" class="btn-pos btn-violet">
+      <i class="bi bi-grid-3x3-gap"></i> Admin Console
+    </a>
+    <a href="{% url 'home' %}" class="btn-pos btn-coral">
+      <i class="bi bi-house"></i> Website
+    </a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  {% for td in table_data %}{% if forloop.first %}
+  <div class="stat-pill">
+    <span class="sp-icon" style="color:rgb(0,230,160);">🟢</span>
+    <div><div class="sp-num" style="color:rgb(0,230,160);">{{ table_data|length }}</div><div class="sp-lbl">Total Tables</div></div>
+  </div>
+  <div class="stat-pill">
+    <span class="sp-icon">🔴</span>
+    <div><div class="sp-num" style="color:rgb(255,94,87);">
+      {% with occupied=0 %}{{ occupied }}{% endwith %}
+    </div><div class="sp-lbl">Occupied</div></div>
+  </div>
+  {% endif %}{% endfor %}
+  <div class="stat-pill">
+    <span class="sp-icon" style="color:var(--gold);">⏰</span>
+    <div><div class="sp-num" style="color:var(--gold);" id="live-time"></div><div class="sp-lbl">Current Time</div></div>
+  </div>
+  <div class="stat-pill ms-auto">
+    <a href="#addTableModal" data-bs-toggle="modal" data-bs-target="#addTableModal" class="btn-pos btn-gold" style="font-size:0.78rem;">
+      <i class="bi bi-plus-lg"></i> Add Table
+    </a>
+  </div>
+</div>
+
+<!-- Messages -->
+{% if messages %}
+<div style="padding:12px 24px 0;">
+  {% for msg in messages %}
+  <div class="alert alert-dismissible fade show mb-2"
+       style="background:rgba(0,230,160,0.1);border:1px solid rgba(0,230,160,0.3);color:rgb(0,230,160);border-radius:12px;font-size:0.88rem;"
+       role="alert">
+    {{ msg }}
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- TABLE MAP -->
+<div class="pos-main">
+  {% if not table_data %}
+    <div style="text-align:center;padding:80px 24px;">
+      <i class="bi bi-grid" style="font-size:3rem;color:var(--dim);"></i>
+      <p style="color:var(--muted);margin-top:16px;font-size:1rem;">No dining tables set up yet.</p>
+      <button class="btn-pos btn-gold mt-3" data-bs-toggle="modal" data-bs-target="#addTableModal">
+        <i class="bi bi-plus-lg"></i> Add Your First Table
+      </button>
+    </div>
+  {% else %}
+    {% regroup table_data by table.section as sections %}
+    {% for section in sections %}
+      <div class="section-header"><i class="bi bi-geo-alt"></i> {{ section.grouper }}</div>
+      <div class="tables-grid">
+        {% for td in section.list %}
+          {% with t=td.table ao=td.active_order %}
+          {% if ao %}
+            <!-- OCCUPIED TABLE — click opens the POS order -->
+            <a href="{% url 'pos_order' t.pk %}" class="table-card table-occupied">
+              <div class="table-num" style="color:rgb(255,94,87);">{{ t.number }}</div>
+              {% if t.label %}<div class="table-label">{{ t.label }}</div>{% endif %}
+              <div class="table-cap"><i class="bi bi-people"></i> Cap: {{ t.capacity }}</div>
+              <div class="table-status-badge badge-occupied">
+                <span class="status-dot dot-occupied"></span>Occupied
+              </div>
+              <div class="table-order-info">
+                Order #{{ ao.pk }}<br>{{ ao.pax }} guest{{ ao.pax|pluralize }}<br>
+                {% if ao.customer_name %}{{ ao.customer_name }}{% endif %}
+              </div>
+              <div class="table-order-total">₹{{ ao.subtotal|floatformat:0 }}</div>
+            </a>
+          {% else %}
+            <!-- FREE TABLE — click opens "new order" modal -->
+            <a href="#" class="table-card table-{{ t.status }}"
+               data-bs-toggle="modal" data-bs-target="#newOrderModal"
+               data-table-id="{{ t.pk }}" data-table-num="{{ t.number }}"
+               data-table-cap="{{ t.capacity }}" data-table-sec="{{ t.section }}">
+              <div class="table-num" style="color:{% if t.status == 'free' %}var(--mint){% elif t.status == 'reserved' %}var(--gold){% else %}var(--azure){% endif %};">
+                {{ t.number }}
+              </div>
+              {% if t.label %}<div class="table-label">{{ t.label }}</div>{% endif %}
+              <div class="table-cap"><i class="bi bi-people"></i> Cap: {{ t.capacity }}</div>
+              <div class="table-status-badge badge-{{ t.status }}">
+                <span class="status-dot dot-{{ t.status }}"></span>{{ t.get_status_display }}
+              </div>
+              {% if t.status == 'free' %}
+              <div style="margin-top:12px;font-size:0.75rem;color:var(--mint);">
+                <i class="bi bi-plus-circle"></i> Tap to open order
+              </div>
+              {% endif %}
+            </a>
+          {% endif %}
+          {% endwith %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+
+<!-- ── MODAL: New Order ── -->
+<div class="modal fade" id="newOrderModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-dark">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-receipt me-2"></i>Open Order — Table <span id="modalTableNum">?</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="newOrderForm" method="get" action="">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label-dark">Customer Name (optional)</label>
+            <input type="text" name="name" class="form-ctrl-dark" placeholder="Walk-in guest name…">
+          </div>
+          <div class="mb-3">
+            <label class="form-label-dark">Number of Guests</label>
+            <input type="number" name="pax" class="form-ctrl-dark" value="1" min="1" max="20">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-pos btn-coral" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn-pos btn-gold"><i class="bi bi-check2-circle"></i> Open Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── MODAL: Add Table ── -->
+<div class="modal fade" id="addTableModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-dark">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-square me-2"></i>Add New Table</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post" action="{% url 'admin_manage_tables' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label-dark">Table Number *</label>
+              <input type="number" name="number" class="form-ctrl-dark" required min="1" placeholder="1">
+            </div>
+            <div class="col-6">
+              <label class="form-label-dark">Label (optional)</label>
+              <input type="text" name="label" class="form-ctrl-dark" placeholder="T-01, VIP-1…">
+            </div>
+            <div class="col-6">
+              <label class="form-label-dark">Capacity *</label>
+              <input type="number" name="capacity" class="form-ctrl-dark" value="4" min="1" max="50">
+            </div>
+            <div class="col-6">
+              <label class="form-label-dark">Section *</label>
+              <select name="section" class="form-ctrl-dark">
+                {% for val, label in sections %}
+                <option value="{{ val }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label-dark">Notes</label>
+              <input type="text" name="notes" class="form-ctrl-dark" placeholder="e.g. Near window, accessibility…">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-pos btn-coral" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn-pos btn-gold"><i class="bi bi-check2"></i> Add Table</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Live clock
+  function tick() {
+    const now = new Date();
+    document.getElementById('live-time').textContent =
+      now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit',hour12:true});
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Populate new-order modal with table info
+  const noModal = document.getElementById('newOrderModal');
+  noModal.addEventListener('show.bs.modal', function(e) {
+    const btn = e.relatedTarget;
+    const tableId = btn.getAttribute('data-table-id');
+    const tableNum = btn.getAttribute('data-table-num');
+    document.getElementById('modalTableNum').textContent = tableNum;
+    document.getElementById('newOrderForm').action = `/pos/table/${tableId}/`;
+  });
+
+  // Auto-refresh every 30 seconds
+  setTimeout(() => location.reload(), 30000);
+</script>
+</body>
+</html>

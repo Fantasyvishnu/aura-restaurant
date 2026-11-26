@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book a Table | Reservations | AURA Fine Dining &amp; Bar{% endblock %}
+{% block meta_description %}Reserve a table at AURA Fine Dining &amp; Bar, a seven-star Tamil fine dining restaurant: main hall, courtyard, chef's table or royal suite.{% endblock %}
+{% block og_title %}Book a Table | AURA Fine Dining &amp; Bar{% endblock %}
+
+{% block content %}
+<!-- RESERVATIONS HEADER -->
+<section class="py-5" style="margin-top: 75px; background: radial-gradient(circle at 50% 20%, rgba(226, 54, 44, 0.18) 0%, rgba(245, 184, 36, 0.08) 50%, transparent 75%);">
+    <div class="container text-center py-4" data-aos="fade-down">
+        <span class="badge-coral mb-2 d-inline-block">Table Reservation</span>
+        <h1 class="brand-font display-4 mb-3">Reserve Your <span class="text-sunset-gradient">Table</span></h1>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+            Reserve a table in our main dining hall, the open courtyard, the chef's table or a private royal suite, and enjoy a seven-star Tamil feast.
+        </p>
+    </div>
+</section>
+
+<!-- RESERVATION INTERACTIVE BOOKING SECTION -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Left Form Area -->
+            <div class="col-lg-8" data-aos="fade-right">
+                <div class="reservation-box">
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                        <div>
+                            <h3 class="brand-font text-white mb-1">Dining Reservation</h3>
+                            <p class="text-muted small mb-0">Fill in your reservation details below. We will confirm your table shortly.</p>
+                        </div>
+                        <div class="live-hours-status"></div>
+                    </div>
+
+                    <form id="reservationForm" method="POST" action="{% url 'reservation' %}">
+                        {% csrf_token %}
+
+                        <!-- Step 1: Party Size & Date -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="reservationGuests" class="form-label d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-people-fill text-gold me-1"></i> Number of Guests</span>
+                                    <small class="text-muted">Max 20 online</small>
+                                </label>
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary text-gold border-secondary" type="button" id="btnGuestsMinus" aria-label="Fewer guests"><i class="bi bi-dash fs-5"></i></button>
+                                    <input type="number" class="form-control text-center fw-bold text-white fs-5 {% if form.guests.errors %}is-invalid{% endif %}" id="reservationGuests" name="guests" value="{{ form.guests.value|default:2 }}" min="1" max="20" required>
+                                    <button class="btn btn-outline-secondary text-gold border-secondary" type="button" id="btnGuestsPlus" aria-label="More guests"><i class="bi bi-plus fs-5"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="reservationDate" class="form-label">
+                                    <i class="bi bi-calendar-event-fill text-coral me-1"></i> Dining Date
+                                </label>
+                                <input type="date" class="form-control {% if form.date.errors %}is-invalid{% endif %}" id="reservationDate" name="date" value="{{ form.date.value|default:'' }}" required>
+                                <small class="text-muted">Reservations open 30 days in advance.</small>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Seating Area Preference -->
+                        <div class="mb-4">
+                            <label class="form-label d-block mb-2">
+                                <i class="bi bi-compass-fill text-cyan me-1"></i> Preferred Dining Ambience
+                            </label>
+                            <div class="row g-2">
+                                <div class="col-sm-6 col-md-3">
+                                    <input type="radio" class="btn-check" name="seating_area" id="areaMain" value="Main Hall" {% if form.seating_area.value == 'Main Hall' or not form.seating_area.value %}checked{% endif %}>
+                                    <label class="btn btn-outline-secondary text-light w-100 py-3 border-secondary small" for="areaMain">
+                                        <i class="bi bi-building d-block mb-1 text-gold fs-4"></i>
+                                        <strong>Main Hall</strong>
+                                    </label>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <input type="radio" class="btn-check" name="seating_area" id="areaTerrace" value="Garden Terrace" {% if form.seating_area.value == 'Garden Terrace' %}checked{% endif %}>
+                                    <label class="btn btn-outline-secondary text-light w-100 py-3 border-secondary small" for="areaTerrace">
+                                        <i class="bi bi-tree d-block mb-1 text-emerald fs-4"></i>
+                                        <strong>Courtyard</strong>
+                                    </label>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <input type="radio" class="btn-check" name="seating_area" id="areaChefs" value="Chef Counter" {% if form.seating_area.value == 'Chef Counter' %}checked{% endif %}>
+                                    <label class="btn btn-outline-secondary text-light w-100 py-3 border-secondary small" for="areaChefs">
+                                        <i class="bi bi-fire d-block mb-1 text-coral fs-4"></i>
+                                        <strong>Chef's Table</strong>
+                                    </label>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <input type="radio" class="btn-check" name="seating_area" id="areaPrivate" value="Private Lounge" {% if form.seating_area.value == 'Private Lounge' %}checked{% endif %}>
+                                    <label class="btn btn-outline-secondary text-light w-100 py-3 border-secondary small" for="areaPrivate">
+                                        <i class="bi bi-shield-lock d-block mb-1 text-cyan fs-4"></i>
+                                        <strong>Royal Suite</strong>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Interactive Time Slots -->
+                        <!-- These times must stay inside OPENING_HOURS in forms.py, and include the times on the home page quick form -->
+                        <div class="mb-4">
+                            <label class="form-label d-block mb-2">
+                                <i class="bi bi-clock-fill text-gold me-1"></i> Available Seating Slots
+                            </label>
+                            <input type="hidden" name="time" id="selectedTimeSlot" value="{{ form.time.value|default:'07:30 PM' }}">
+                            <p class="small text-gold mb-2"><i class="bi bi-sun me-1"></i> Lunch</p>
+                            <div class="row g-2 mb-3" id="timeSlotGridLunch">
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">12:00 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">12:30 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">01:00 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">01:30 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">02:00 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">02:30 PM</button></div>
+                            </div>
+                            <p class="small text-gold mb-2"><i class="bi bi-moon-stars me-1"></i> Dinner</p>
+                            <div class="row g-2" id="timeSlotGridDinner">
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">07:00 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">07:30 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">08:00 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">08:30 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">09:00 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">09:30 PM</button></div>
+                                <div class="col-6 col-sm-4 col-md-3"><button type="button" class="time-slot-btn">10:00 PM</button></div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Contact Information -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="guestName" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control {% if form.name.errors %}is-invalid{% endif %}" id="guestName" name="name" value="{{ form.name.value|default:'' }}" placeholder="Your full name" maxlength="120" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="guestEmail" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="guestEmail" name="email" value="{{ form.email.value|default:'' }}" placeholder="name@domain.com" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="guestPhone" class="form-label">Mobile Phone Number *</label>
+                                <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" id="guestPhone" name="phone" value="{{ form.phone.value|default:'' }}" placeholder="{{ restaurant.phone }}" minlength="7" maxlength="20" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="specialOccasion" class="form-label">Celebration / Occasion</label>
+                                <select class="form-select" id="specialOccasion" name="occasion">
+                                    <option value="Casual Fine Dining" {% if form.occasion.value == 'Casual Fine Dining' or not form.occasion.value %}selected{% endif %}>Casual Fine Dining</option>
+                                    <option value="Anniversary" {% if form.occasion.value == 'Anniversary' %}selected{% endif %}>Anniversary Celebration</option>
+                                    <option value="Birthday" {% if form.occasion.value == 'Birthday' %}selected{% endif %}>Birthday Gathering</option>
+                                    <option value="Business Entertaining" {% if form.occasion.value == 'Business Entertaining' %}selected{% endif %}>Business Entertaining</option>
+                                    <option value="Romantic Date Night" {% if form.occasion.value == 'Romantic Date Night' %}selected{% endif %}>Romantic Date Night</option>
+                                    <option value="Proposal" {% if form.occasion.value == 'Proposal' %}selected{% endif %}>Wedding Proposal</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="specialRequests" class="form-label">Dietary Restrictions or Special Notes</label>
+                                <textarea class="form-control" id="specialRequests" name="requests" rows="3" maxlength="1000" placeholder="Kindly let us know of any allergies, favorite wines, or personalized table requests...">{{ form.requests.value|default:'' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Pay-at-restaurant and no-show fine policy: the guest must accept it -->
+                        <div class="mt-4 p-3 rounded-3" style="background: rgba(245, 184, 36, 0.08); border: 1px solid rgba(245, 184, 36, 0.35);">
+                            <p class="text-gold fw-semibold small mb-2"><i class="bi bi-cash-coin me-1"></i> Payment &amp; No-show Fine</p>
+                            <ul class="small text-light mb-3 ps-3">
+                                <li>Booking a table is <strong>free</strong>. <strong>No online payment</strong>: any amount is collected in person at the restaurant.</li>
+                                <li>We hold your table for <strong>{{ restaurant.grace_minutes }} minutes</strong>. If you do not arrive, a no-show fine of <strong>&#8377;{{ restaurant.no_show_fine }}</strong> is collected at the restaurant on your next visit.</li>
+                                <li>Cancel at least 24 hours before to avoid the fine.</li>
+                            </ul>
+                            <div class="form-check mb-0">
+                                <input class="form-check-input bg-dark border-secondary {% if form.accept_policy.errors %}is-invalid{% endif %}" type="checkbox" id="acceptPolicy" name="accept_policy" value="1" {% if form.accept_policy.value %}checked{% endif %} required>
+                                <label class="form-check-label small text-light" for="acceptPolicy">
+                                    I understand and accept the <a href="{% url 'policy' %}#booking" target="_blank" class="text-gold">booking and no-show fine policy</a>. *
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-coral btn-lg w-100 py-3 fs-5">
+                                <i class="bi bi-check2-circle me-2"></i> Request Table Reservation
+                            </button>
+                            <small class="text-light d-block text-center mt-2">
+                                <i class="bi bi-shield-check text-emerald me-1"></i> No deposit and no online payment. Free cancellation up to 24 hours before your booking.
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Policies & Perks Sidebar -->
+            <div class="col-lg-4" data-aos="fade-left">
+                <!-- Dining Guidelines Card -->
+                <div class="bg-card-surface rounded-4 p-4 border border-secondary border-opacity-25 mb-4" style="border-left: 4px solid var(--color-cyan) !important;">
+                    <h5 class="text-cyan brand-font mb-3"><i class="bi bi-info-circle me-2"></i> Dining Guidelines</h5>
+                    <ul class="list-unstyled small text-light mb-0">
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-cyan mt-1"></i>
+                            <span><strong class="text-white">Dress Code:</strong> Smart casual or traditional attire. Please avoid beachwear and sportswear.</span>
+                        </li>
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-cyan mt-1"></i>
+                            <span><strong class="text-white">Grace Period:</strong> We hold reserved tables for up to {{ restaurant.grace_minutes }} minutes past booking time. After that, the no-show fine applies.</span>
+                        </li>
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-cyan mt-1"></i>
+                            <span><strong class="text-white">Families:</strong> Children are welcome. Mention in your notes if you need a high chair.</span>
+                        </li>
+                        <li class="d-flex gap-2">
+                            <i class="bi bi-check-circle-fill text-cyan mt-1"></i>
+                            <span><strong class="text-white">Diet:</strong> Vegetarian, Jain, vegan and gluten-free meals are available. Add a note when you book.</span>
+                        </li>
+                        <li class="d-flex gap-2 mt-3">
+                            <i class="bi bi-check-circle-fill text-cyan mt-1"></i>
+                            <span><strong class="text-white">Bar:</strong> Bar service is for guests aged {{ restaurant.bar_min_age }} and above. Please carry a photo ID.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Private Dining & Large Events Card -->
+                <div class="bg-card-surface rounded-4 p-4 border border-gold mb-4 text-center">
+                    <i class="bi bi-stars text-gold fs-1 d-block mb-2"></i>
+                    <h5 class="text-white brand-font mb-2">Events & Private Dining</h5>
+                    <p class="text-muted small mb-3">
+                        Planning a wedding feast, festival gathering or a party of more than 20 guests?
+                    </p>
+                    <a href="tel:{{ restaurant.events_phone_tel }}" class="btn btn-outline-cyan btn-sm w-100 mb-2">
+                        <i class="bi bi-telephone-fill me-1"></i> Call Events Team: {{ restaurant.events_phone }}
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-gold btn-sm w-100">
+                        <i class="bi bi-envelope-fill me-1"></i> Send an Event Inquiry
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Highlight the time slot that matches the saved / pre-filled value
+    var hidden = document.getElementById('selectedTimeSlot');
+    var slots = document.querySelectorAll('.time-slot-btn');
+    if (hidden) {
+        var matched = false;
+        slots.forEach(function (btn) {
+            var isMatch = btn.textContent.trim() === hidden.value.trim();
+            btn.classList.toggle('active', isMatch);
+            if (isMatch) matched = true;
+        });
+        // Unknown value (e.g. edited by hand): fall back to the 07:30 PM slot
+        if (!matched) {
+            slots.forEach(function (btn) {
+                if (btn.textContent.trim() === '07:30 PM') {
+                    btn.classList.add('active');
+                    hidden.value = '07:30 PM';
+                }
+            });
+        }
+    }
+
+    // 2. Date limits: today up to 30 days ahead (the server checks this too)
+    var dateInput = document.getElementById('reservationDate');
+    if (dateInput) {
+        var fmt = function (d) {
+            var m = String(d.getMonth() + 1).padStart(2, '0');
+            var day = String(d.getDate()).padStart(2, '0');
+            return d.getFullYear() + '-' + m + '-' + day;
+        };
+        var today = new Date();
+        var last = new Date();
+        last.setDate(today.getDate() + 30);
+        dateInput.min = fmt(today);
+        dateInput.max = fmt(last);
+    }
+});
+</script>
+{% endblock %}

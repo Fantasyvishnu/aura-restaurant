@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Gallery Image — AURA Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+  :root { --midnight-black:rgb(9,12,18);--card-bg:rgb(22,28,50);--border-subtle:rgba(255,255,255,0.08);--electric-gold:rgb(255,198,0);--tangerine:rgb(255,140,0);--royal-violet:rgb(165,94,234);--text-primary:rgb(241,245,249);--text-muted:rgb(148,163,184);--text-dim:rgb(100,116,139); }
+  * { box-sizing:border-box; }
+  body { background:var(--midnight-black);color:var(--text-primary);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh; }
+  .edit-wrapper { max-width:680px;margin:0 auto;padding:40px 20px 80px; }
+  .back-link { color:var(--text-muted);font-size:0.85rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px; }
+  .back-link:hover { color:var(--electric-gold); }
+  .edit-title { font-size:1.6rem;font-weight:800; }
+  .edit-title span { background:linear-gradient(135deg,var(--royal-violet),var(--electric-gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+  .edit-card { background:var(--card-bg);border:1px solid var(--border-subtle);border-radius:20px;padding:32px; }
+  .form-label { font-size:0.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:8px;display:block; }
+  .form-control,.form-select { background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--text-primary);padding:11px 15px;font-size:0.9rem;width:100%;transition:border-color 0.2s; }
+  .form-control:focus,.form-select:focus { background:rgba(255,255,255,0.07);border-color:var(--electric-gold);color:var(--text-primary);box-shadow:0 0 0 3px rgba(255,198,0,0.12);outline:none; }
+  .form-control::placeholder { color:var(--text-dim); }
+  .form-select { background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23cbd5e1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 12px center;background-size:14px;appearance:none; }
+  .form-select option { background:rgb(22,28,50);color:var(--text-primary); }
+  .mb-field { margin-bottom:20px; }
+  .current-img { border-radius:12px;max-height:200px;max-width:100%;object-fit:cover;border:1px solid var(--border-subtle);margin-bottom:10px; }
+  .btn-save { background:linear-gradient(135deg,var(--electric-gold),var(--tangerine));color:rgb(0,0,0);border:none;padding:12px 32px;border-radius:12px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s; }
+  .btn-save:hover { opacity:0.9;transform:translateY(-1px); }
+  .btn-cancel { background:rgba(255,255,255,0.07);color:var(--text-muted);border:1px solid var(--border-subtle);padding:12px 24px;border-radius:12px;font-size:0.9rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px; }
+  .btn-cancel:hover { background:rgba(255,255,255,0.12);color:var(--text-primary); }
+  .row-grid.two { display:grid;grid-template-columns:1fr 1fr;gap:20px; }
+  @media(max-width:600px){.row-grid.two{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="edit-wrapper">
+  <a href="/admin-dashboard/" class="back-link" onclick="history.back();return false;"><i class="bi bi-arrow-left"></i> Back to Admin Dashboard</a>
+  <h1 class="edit-title">Edit <span>Gallery Image</span></h1>
+  <p style="color:var(--text-muted);font-size:0.9rem;margin:4px 0 24px;">Editing: <strong style="color:var(--electric-gold);">{{ img.title }}</strong></p>
+
+  {% if messages %}{% for msg in messages %}<div class="alert mb-4" style="background:rgba(0,230,160,0.1);border:1px solid rgba(0,230,160,0.3);color:rgb(0,230,160);border-radius:12px;"><i class="bi bi-check-circle me-2"></i>{{ msg }}</div>{% endfor %}{% endif %}
+
+  <div class="edit-card">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-field">
+        <label class="form-label">Title *</label>
+        <input type="text" name="title" class="form-control" value="{{ img.title }}" required>
+      </div>
+      <div class="row-grid two">
+        <div class="mb-field">
+          <label class="form-label">Category</label>
+          <select name="category" class="form-select">
+            <option value="interior" {% if img.category == 'interior' %}selected{% endif %}>Interior</option>
+            <option value="dishes"   {% if img.category == 'dishes'   %}selected{% endif %}>Dishes</option>
+            <option value="drinks"   {% if img.category == 'drinks'   %}selected{% endif %}>Drinks</option>
+            <option value="patio"    {% if img.category == 'patio'    %}selected{% endif %}>Patio / Terrace</option>
+            <option value="events"   {% if img.category == 'events'   %}selected{% endif %}>Events</option>
+            <option value="team"     {% if img.category == 'team'     %}selected{% endif %}>Team</option>
+          </select>
+        </div>
+        <div class="mb-field">
+          <label class="form-label">Display Order</label>
+          <input type="number" name="display_order" class="form-control" value="{{ img.display_order|default:0 }}" min="0">
+        </div>
+      </div>
+      <div class="mb-field">
+        <label class="form-label">Description / Caption</label>
+        <input type="text" name="description" class="form-control" value="{{ img.description|default:'' }}" placeholder="Short caption…">
+      </div>
+      <div class="mb-field">
+        <label class="form-label">Image</label>
+        {% if img.image %}
+          <div style="margin-bottom:10px;">
+            <img src="{{ img.image.url }}" alt="{{ img.title }}" class="current-img">
+            <p style="font-size:0.78rem;color:var(--text-dim);">Current image. Upload below to replace.</p>
+          </div>
+        {% endif %}
+        <input type="file" name="image" class="form-control" accept="image/*">
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:28px;">
+        <button type="submit" class="btn-save"><i class="bi bi-check-lg me-1"></i> Save Changes</button>
+        <a href="/admin-dashboard/" class="btn-cancel"><i class="bi bi-x-lg"></i> Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

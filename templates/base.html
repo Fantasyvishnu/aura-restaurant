@@ -1,0 +1,384 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AURA Fine Dining &amp; Bar | Seven-Star Tamil Nadu Dining{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}AURA Fine Dining &amp; Bar: a seven-star Tamil Nadu fine dining restaurant. Chettinad, Kongu, Madurai and Thanjavur feasts served on banana leaf with royal hospitality.{% endblock %}">
+
+    <!-- Social sharing (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AURA Fine Dining &amp; Bar">
+    <meta property="og:title" content="{% block og_title %}AURA Fine Dining &amp; Bar | Seven-Star Tamil Nadu Dining{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Heritage Tamil Nadu recipes, banana-leaf feasts and royal hospitality.{% endblock %}">
+    <meta name="theme-color" content="#160907">
+
+    <!-- Favicon (inline, so no extra file is needed) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%94%3C/text%3E%3C/svg%3E">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        /* Small helpers used only by this base template */
+        .skip-link {
+            position: absolute; left: -9999px; top: 0; z-index: 2000;
+            background: #ffc600; color: #000; padding: 10px 16px; font-weight: 700;
+        }
+        .skip-link:focus { left: 8px; top: 8px; }
+
+        /* Flash messages float above the page, so they never push the layout down */
+        .flash-messages {
+            position: fixed; top: 84px; left: 50%; transform: translateX(-50%);
+            width: min(92vw, 620px); z-index: 1090;
+        }
+
+        /* Logout button that looks like a link */
+        .btn-logout-link {
+            background: none; border: 0; padding: 0; cursor: pointer;
+            color: inherit; font: inherit; text-align: left;
+        }
+        .btn-logout-link:hover { opacity: 0.8; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <!-- Ambient Glow Effects -->
+    <div class="ambient-glow ambient-top-right"></div>
+    <div class="ambient-glow ambient-bottom-left"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar" id="mainNavbar" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+                <i class="bi bi-stars brand-logo-icon"></i>
+                <div class="d-flex flex-column">
+                    <span class="brand-title brand-font text-gold">AURA</span>
+                    <span style="font-size: 0.7rem; letter-spacing: 1px; color: var(--text-muted);">Fine Dining &amp; Bar &bull; 7&#9733;</span>
+                </div>
+            </a>
+
+            <!-- Mobile Offcanvas Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNavDrawer" aria-controls="mobileNavDrawer" aria-label="Toggle navigation">
+                <i class="bi bi-list fs-3"></i>
+            </button>
+
+            <!-- Desktop Navigation Links -->
+            <div class="collapse navbar-collapse justify-content-center" id="desktopNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'menu' %}active{% endif %}" href="{% url 'menu' %}">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">Our Story</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'reservation' %}active{% endif %}" href="{% url 'reservation' %}">Reservations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Header Action Button with Separate User / Admin Status -->
+            <div class="d-none d-lg-flex align-items-center gap-3">
+                {% if user.is_authenticated %}
+                    {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-shield-lock me-1"></i> Admin Console
+                        </a>
+                    {% else %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-gold btn-sm">
+                            <i class="bi bi-person-circle me-1"></i> My Bookings
+                        </a>
+                    {% endif %}
+                    <form method="post" action="{% url 'logout' %}" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout-link text-muted small" title="Sign Out" aria-label="Sign Out">
+                            <i class="bi bi-box-arrow-right fs-5 text-secondary"></i>
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-light text-decoration-none small d-flex align-items-center gap-1">
+                        <i class="bi bi-box-arrow-in-right text-gold"></i> Sign In
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-gold btn-sm px-3">
+                        Register
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'reservation' %}" class="btn btn-gold btn-sm px-4">
+                    <i class="bi bi-calendar-check me-1"></i> Book Table
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Drawer / Offcanvas -->
+    <div class="offcanvas offcanvas-end custom-offcanvas" tabindex="-1" id="mobileNavDrawer" aria-labelledby="mobileNavDrawerLabel">
+        <div class="offcanvas-header border-bottom border-secondary border-opacity-25 py-3">
+            <h5 class="offcanvas-title brand-font text-gold d-flex align-items-center gap-2" id="mobileNavDrawerLabel">
+                <i class="bi bi-stars"></i> AURA
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column justify-content-between py-4">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <span><i class="bi bi-house-door me-2 text-gold"></i> Home</span>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'menu' %}">
+                        <span><i class="bi bi-journal-richtext me-2 text-gold"></i> Our Menu</span>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'about' %}">
+                        <span><i class="bi bi-award me-2 text-gold"></i> Our Story & Chef</span>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reservation' %}">
+                        <span><i class="bi bi-calendar-event me-2 text-gold"></i> Table Reservations</span>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'gallery' %}">
+                        <span><i class="bi bi-camera me-2 text-gold"></i> Ambiance & Gallery</span>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'contact' %}">
+                        <span><i class="bi bi-geo-alt me-2 text-gold"></i> Location & Contact</span>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </li>
+
+                <!-- User specific mobile links -->
+                <li class="nav-item pt-2 border-top border-secondary border-opacity-25 mt-2">
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff or user.is_superuser %}
+                            <a class="nav-link text-warning" href="{% url 'admin_dashboard' %}">
+                                <span><i class="bi bi-shield-lock me-2"></i> Staff Admin Console</span>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </a>
+                        {% else %}
+                            <a class="nav-link text-gold" href="{% url 'dashboard' %}">
+                                <span><i class="bi bi-person-circle me-2"></i> My Dashboard</span>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </a>
+                        {% endif %}
+                        <form method="post" action="{% url 'logout' %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link text-danger btn-logout-link w-100">
+                                <span><i class="bi bi-box-arrow-right me-2"></i> Sign Out ({{ user.username }})</span>
+                            </button>
+                        </form>
+                    {% else %}
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <span><i class="bi bi-box-arrow-in-right me-2 text-gold"></i> Customer Sign In</span>
+                            <i class="bi bi-chevron-right text-muted small"></i>
+                        </a>
+                        <a class="nav-link" href="{% url 'register' %}">
+                            <span><i class="bi bi-person-plus me-2 text-gold"></i> Register Account</span>
+                            <i class="bi bi-chevron-right text-muted small"></i>
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+
+            <div class="mobile-drawer-footer pt-4 border-top border-secondary border-opacity-25">
+                <div class="live-hours-status mb-3"></div>
+                <a href="{% url 'reservation' %}" class="btn btn-gold w-100 mb-2">
+                    <i class="bi bi-calendar-check me-1"></i> Book a Table Now
+                </a>
+                <p class="text-center text-muted small mb-0">Call us: <a href="tel:{{ restaurant.phone_tel }}" class="text-muted">{{ restaurant.phone }}</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Django Messages (floating, auto-dismiss). Error messages use Bootstrap's "danger" via MESSAGE_TAGS in settings.py -->
+    {% if messages %}
+    <div class="flash-messages" aria-live="polite">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show bg-card-surface border-gold text-light shadow-lg" role="alert" data-autodismiss="{% if message.level >= 40 %}12000{% else %}6000{% endif %}">
+            {% if message.level >= 40 %}
+                <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+            {% elif message.level >= 30 %}
+                <i class="bi bi-exclamation-circle-fill text-warning me-2"></i>
+            {% elif message.level >= 25 %}
+                <i class="bi bi-check-circle-fill text-success me-2"></i>
+            {% else %}
+                <i class="bi bi-info-circle-fill text-gold me-2"></i>
+            {% endif %}
+            {{ message }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content Block -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Mobile Sticky Reservation Bar (< 768px) -->
+    <div class="mobile-reservation-bar d-md-none">
+        <div>
+            <span class="d-block text-gold fw-bold" style="font-size: 0.9rem;">AURA</span>
+            <small class="text-muted" style="font-size: 0.75rem;">Reserve your table</small>
+        </div>
+        <a href="{% url 'reservation' %}" class="btn btn-gold btn-sm px-3">
+            <i class="bi bi-calendar-plus me-1"></i> Reserve Now
+        </a>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button type="button" class="btn-back-to-top" id="backToTopBtn" aria-label="Back to top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- Gallery Lightbox Modal -->
+    <div class="modal fade" id="galleryLightboxModal" tabindex="-1" aria-label="Gallery preview" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark-surface border-gold">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-3">
+                    <img id="lightboxModalImg" src="{% static 'images/placeholder_dish.png' %}" alt="Gallery Preview" class="img-fluid rounded mb-3" style="max-height: 75vh; object-fit: contain;">
+                    <div id="lightboxModalCaption" class="text-light"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Luxury Footer -->
+    <div class="temple-border"></div>
+    <footer class="custom-footer">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <!-- Col 1: Brand -->
+                <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-stars brand-logo-icon"></i>
+                        <span class="brand-title brand-font text-gold">AURA</span>
+                    </div>
+                    <p class="text-muted small pe-lg-4 mb-4">
+                        A seven-star celebration of Tamil Nadu's heritage kitchens: slow-cooked, stone-ground and served on banana leaf with royal hospitality.
+                    </p>
+                </div>
+
+                <!-- Col 2: Navigation -->
+                <div class="col-lg-2 col-md-6 col-6" data-aos="fade-up" data-aos-delay="100">
+                    <h6 class="text-gold brand-font mb-3">EXPLORE</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}" class="footer-nav-link">Home</a></li>
+                        <li><a href="{% url 'menu' %}" class="footer-nav-link">Our Menu</a></li>
+                        <li><a href="{% url 'about' %}" class="footer-nav-link">The Story</a></li>
+                        <li><a href="{% url 'reservation' %}" class="footer-nav-link">Book a Table</a></li>
+                        <li><a href="{% url 'gallery' %}" class="footer-nav-link">Ambiance Gallery</a></li>
+                        <li><a href="{% url 'contact' %}" class="footer-nav-link">Private Events & Catering</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Hours & Live Status -->
+                <div class="col-lg-3 col-md-6 col-6" data-aos="fade-up" data-aos-delay="200">
+                    <h6 class="text-gold brand-font mb-3">SERVICE HOURS</h6>
+                    <div class="live-hours-status mb-3"></div>
+                    {# Keep these hours the same as OPENING_HOURS in forms.py and the schedule in script.js #}
+                    <p class="text-muted small mb-1"><strong>Open every day</strong></p>
+                    <p class="text-light small mb-3">12:00 PM – 11:00 PM</p>
+                    <p class="text-muted small mb-1"><strong>Last seating</strong></p>
+                    <p class="text-light small mb-0">10:30 PM</p>
+                </div>
+
+                <!-- Col 4: Contact -->
+                <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <h6 class="text-gold brand-font mb-3">VISIT US</h6>
+                    <p class="text-muted small mb-3">Ask about festival feasts, wedding catering and private dining suites.</p>
+                    <a href="{% url 'contact' %}" class="btn btn-gold btn-sm mb-3">
+                        <i class="bi bi-envelope me-1"></i> Contact the Concierge
+                    </a>
+                    <div class="small text-muted mb-2">
+                        <i class="bi bi-geo-alt text-gold me-2"></i> {{ restaurant.address }}
+                    </div>
+                    <div class="small">
+                        <a href="{% url 'admin_login' %}" class="text-secondary text-decoration-none small">
+                            <i class="bi bi-shield-lock text-gold me-1"></i> Staff & Admin Access
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Subfooter -->
+            <div class="border-top border-secondary border-opacity-25 pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small text-muted">
+                <p class="mb-0">© {% now "Y" %} AURA Fine Dining &amp; Bar. All Rights Reserved.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'policy' %}#privacy" class="text-muted text-decoration-none">Privacy Policy</a>
+                    <a href="{% url 'policy' %}#booking" class="text-muted text-decoration-none">Booking &amp; Fine Policy</a>
+                    <a href="{% url 'policy' %}#bar" class="text-muted text-decoration-none">Bar Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 50
+        });
+
+        // Auto-close flash messages after a few seconds
+        document.querySelectorAll('.flash-messages .alert[data-autodismiss]').forEach(function (el) {
+            var delay = parseInt(el.getAttribute('data-autodismiss'), 10) || 6000;
+            setTimeout(function () {
+                if (window.bootstrap && document.body.contains(el)) {
+                    bootstrap.Alert.getOrCreateInstance(el).close();
+                }
+            }, delay);
+        });
+    </script>
+    <!-- Custom Script -->
+    <script src="{% static 'js/script.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

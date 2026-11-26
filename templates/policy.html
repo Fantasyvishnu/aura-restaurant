@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking, Fine &amp; Privacy Policy | AURA Fine Dining &amp; Bar{% endblock %}
+{% block meta_description %}How table booking, payment at the restaurant, the no-show fine, bar service and privacy work at AURA Fine Dining &amp; Bar.{% endblock %}
+{% block og_title %}Booking, Fine &amp; Privacy Policy | AURA Fine Dining &amp; Bar{% endblock %}
+
+{% block content %}
+<section class="py-5" style="margin-top: 75px; background: radial-gradient(circle at 50% 20%, rgba(226, 54, 44, 0.18) 0%, rgba(245, 184, 36, 0.08) 50%, transparent 75%);">
+    <div class="container text-center py-4" data-aos="fade-down">
+        <span class="badge-gold mb-2 d-inline-block">Please Read</span>
+        <h1 class="brand-font display-5 mb-3">Booking, Fine &amp; <span class="text-sunset-gradient">Privacy Policy</span></h1>
+        <p class="text-muted mx-auto" style="max-width: 640px;">Simple rules so every guest gets a table and a great evening.</p>
+        <div class="lamp-divider"><i class="bi bi-stars"></i></div>
+    </div>
+</section>
+
+<section class="pb-5">
+    <div class="container" style="max-width: 900px;">
+
+        <!-- Quick jump links -->
+        <div class="d-flex flex-wrap justify-content-center gap-2 mb-5" data-aos="fade-up">
+            <a href="#booking" class="btn btn-outline-gold btn-sm">Booking &amp; Payment</a>
+            <a href="#fine" class="btn btn-outline-gold btn-sm">No-show Fine</a>
+            <a href="#cancel" class="btn btn-outline-gold btn-sm">Cancellation</a>
+            <a href="#bar" class="btn btn-outline-gold btn-sm">Bar Policy</a>
+            <a href="#privacy" class="btn btn-outline-gold btn-sm">Privacy</a>
+        </div>
+
+        <div class="bg-card-surface rounded-4 p-4 p-md-5 border border-secondary border-opacity-25 mb-4" id="booking" data-aos="fade-up">
+            <h3 class="brand-font text-gold mb-3"><i class="bi bi-calendar-check me-2"></i> Booking &amp; Payment</h3>
+            <ul class="text-light mb-0">
+                <li class="mb-2">Booking a table on this website is <strong>free</strong>.</li>
+                <li class="mb-2">There is <strong>no online payment</strong> and no deposit. We never ask for card or bank details on this website.</li>
+                <li class="mb-2">Any amount (your bill, or a fine described below) is <strong>collected in person at the restaurant</strong>, in hand.</li>
+                <li class="mb-2">Your booking is a request until our team confirms it. We confirm by e-mail, and by phone or WhatsApp when possible.</li>
+                <li class="mb-2">Tables can be booked up to 30 days ahead, for up to 20 guests online. For larger groups please call <a href="tel:{{ restaurant.events_phone_tel }}" class="text-gold">{{ restaurant.events_phone }}</a>.</li>
+                <li>We serve every day from 12:00 PM to 11:00 PM. Last seating is at 10:30 PM.</li>
+            </ul>
+        </div>
+
+        <div class="bg-card-surface rounded-4 p-4 p-md-5 mb-4" id="fine" data-aos="fade-up" style="border: 1px solid rgba(226, 54, 44, 0.45);">
+            <h3 class="brand-font text-coral mb-3"><i class="bi bi-exclamation-octagon me-2"></i> No-show Fine</h3>
+            <ul class="text-light mb-3">
+                <li class="mb-2">We hold your table for <strong>{{ restaurant.grace_minutes }} minutes</strong> after your booked time.</li>
+                <li class="mb-2">If you do not arrive within that time, and you have not cancelled, the booking is marked <strong>No-show</strong> and a fine of <strong>&#8377;{{ restaurant.no_show_fine }}</strong> per booking applies.</li>
+                <li class="mb-2">The fine is <strong>collected at the restaurant, in hand, on your next visit</strong>. It is never charged online.</li>
+                <li class="mb-2">We send you a message (e-mail, and WhatsApp when possible) when a no-show fine is recorded.</li>
+                <li>If something genuinely went wrong (an emergency, for example), please call us. The manager may waive the fine.</li>
+            </ul>
+            <p class="text-muted small mb-0">If you are late but on your way, call <a href="tel:{{ restaurant.phone_tel }}" class="text-gold">{{ restaurant.phone }}</a> and we will do our best to keep your table.</p>
+        </div>
+
+        <div class="bg-card-surface rounded-4 p-4 p-md-5 border border-secondary border-opacity-25 mb-4" id="cancel" data-aos="fade-up">
+            <h3 class="brand-font text-gold mb-3"><i class="bi bi-x-circle me-2"></i> Cancellation</h3>
+            <ul class="text-light mb-0">
+                <li class="mb-2">Cancel free of charge up to <strong>24 hours</strong> before your booking, from your guest dashboard.</li>
+                <li class="mb-2">Within 24 hours, please call <a href="tel:{{ restaurant.phone_tel }}" class="text-gold">{{ restaurant.phone }}</a>. Our team can cancel it for you.</li>
+                <li>Guests who booked without an account can call us to cancel.</li>
+            </ul>
+        </div>
+
+        <div class="bg-card-surface rounded-4 p-4 p-md-5 border border-secondary border-opacity-25 mb-4" id="bar" data-aos="fade-up">
+            <h3 class="brand-font text-gold mb-3"><i class="bi bi-cup-straw me-2"></i> Bar Policy</h3>
+            <ul class="text-light mb-0">
+                <li class="mb-2">Alcohol is served only to guests aged <strong>{{ restaurant.bar_min_age }} and above</strong>. Please carry a photo ID, as we may ask for it.</li>
+                <li class="mb-2">We may refuse service to any guest, and we ask guests not to drive after drinking.</li>
+                <li>Mocktails, juices, tea and filter coffee are available for everyone.</li>
+            </ul>
+        </div>
+
+        <div class="bg-card-surface rounded-4 p-4 p-md-5 border border-secondary border-opacity-25 mb-4" id="privacy" data-aos="fade-up">
+            <h3 class="brand-font text-gold mb-3"><i class="bi bi-shield-lock me-2"></i> Privacy</h3>
+            <ul class="text-light mb-0">
+                <li class="mb-2">When you book we store your name, e-mail, phone number and booking details. When you create a guest account we also store your username and an encrypted password.</li>
+                <li class="mb-2">We use this only to manage your reservation, contact you about it (e-mail, phone or WhatsApp) and answer your messages.</li>
+                <li class="mb-2">We do not sell your details. They are visible only to our staff.</li>
+                <li class="mb-2">This website does not take card or bank details.</li>
+                <li>To see, correct or delete your details, e-mail <a href="mailto:{{ restaurant.email_bookings }}" class="text-gold">{{ restaurant.email_bookings }}</a>.</li>
+            </ul>
+        </div>
+
+        <div class="text-center mt-5" data-aos="zoom-in">
+            <a href="{% url 'reservation' %}" class="btn btn-gold btn-lg px-5"><i class="bi bi-calendar-plus me-2"></i> Book a Table</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Menu | AURA Fine Dining &amp; Bar{% endblock %}
+{% block meta_description %}Explore the AURA Fine Dining &amp; Bar menu: Chettinad, Kongu, Madurai and Thanjavur specialities, banana-leaf meals, biryanis, tiffins, sweets and filter coffee.{% endblock %}
+{% block og_title %}Our Menu | AURA Fine Dining &amp; Bar{% endblock %}
+
+{% block content %}
+<!-- PAGE HERO HEADER -->
+<section class="py-5" style="margin-top: 75px; background: radial-gradient(circle at 50% 20%, rgba(226, 54, 44, 0.18) 0%, rgba(245, 184, 36, 0.08) 50%, transparent 75%);">
+    <div class="container text-center py-4" data-aos="fade-down">
+        <span class="badge-coral mb-2 d-inline-block">The Culinary Collection</span>
+        <h1 class="brand-font display-4 mb-3">Our <span class="text-sunset-gradient">Menu</span></h1>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+            A journey through the kitchens of Tamil Nadu: fiery Chettinad curries, earthy Kongu classics, Madurai favourites and Thanjavur sweets, all cooked from heritage recipes.
+        </p>
+    </div>
+</section>
+
+<!-- MENU CATEGORIES & GRID (FROM THE DATABASE) -->
+<section class="py-4">
+    <div class="container">
+        <!-- Category filter buttons -->
+        <div class="menu-nav-tabs" data-aos="fade-up">
+            <button type="button" class="menu-tab-btn active" data-filter="all">All Dishes</button>
+            {% for cat in categories %}
+            <button type="button" class="menu-tab-btn" data-filter="{{ cat.slug }}">{{ cat.name }}</button>
+            {% endfor %}
+        </div>
+
+        <!-- Menu cards -->
+        <div class="row g-4" id="menuGrid">
+            {% for item in all_items %}
+            <div class="col-lg-4 col-md-6 menu-grid-item" data-category="{{ item.category.slug }}" data-aos="fade-up" data-aos-delay="100">
+                <div class="menu-card">
+                    <div class="menu-img-wrap">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy">
+                        {% else %}
+                            <img src="{% static 'images/placeholder_dish.png' %}" alt="{{ item.name }}" loading="lazy">
+                        {% endif %}
+                        <span class="menu-card-price">&#8377;{{ item.price|floatformat:"-2" }}</span>
+                    </div>
+                    <div class="menu-card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            {% if item.is_chef_special %}
+                                <span class="badge-coral small py-1 px-2">Chef's Special</span>
+                            {% else %}
+                                <span class="badge-gold small py-1 px-2">{{ item.category.name }}</span>
+                            {% endif %}
+
+                            {% if item.dietary_tag %}
+                                <span class="text-emerald small fw-semibold"><i class="bi bi-leaf me-1"></i>{{ item.dietary_tag }}</span>
+                            {% endif %}
+                        </div>
+                        <h4 class="menu-card-title">{{ item.name }}</h4>
+                        <p class="menu-card-desc">{{ item.description }}</p>
+
+                        <div class="border-top border-secondary border-opacity-25 pt-3 mt-auto d-flex justify-content-between align-items-center">
+                            {% if item.wine_pairing %}
+                                <small class="text-light fw-medium"><i class="bi bi-cup-hot text-coral me-1"></i> {{ item.wine_pairing }}</small>
+                            {% else %}
+                                <small class="text-light fw-medium"><i class="bi bi-patch-check text-emerald me-1"></i> Freshly Made Daily</small>
+                            {% endif %}
+                            <a href="{% url 'reservation' %}" class="btn btn-outline-gold btn-sm" aria-label="Reserve a table"><i class="bi bi-bookmark-plus"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted py-5">
+                <p>No dishes yet. Add dishes in the Django admin panel.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Dietary notice -->
+        <div class="p-4 rounded-4 bg-dark-surface border border-secondary border-opacity-25 text-center mt-5" data-aos="fade-up" style="border-left: 4px solid var(--color-emerald) !important;">
+            <h5 class="text-emerald brand-font mb-2"><i class="bi bi-flower1 me-2"></i> Vegetarian, Non-Vegetarian & Allergies</h5>
+            <p class="text-muted small mb-0 max-w-700 mx-auto" style="max-width: 650px;">
+                Our menu includes both vegetarian and non-vegetarian dishes. Jain, vegan and gluten-free requests, and nut or other allergies, are welcome: please tell your host or add a note when you book.
+            </p>
+        </div>
+
+        <!-- Bar notice -->
+        <div class="p-4 rounded-4 bg-dark-surface border border-secondary border-opacity-25 text-center mt-4" data-aos="fade-up" style="border-left: 4px solid var(--turmeric-gold) !important;">
+            <h5 class="text-gold brand-font mb-2"><i class="bi bi-cup-straw me-2"></i> AURA Bar</h5>
+            <p class="text-muted small mb-0 max-w-700 mx-auto" style="max-width: 650px;">
+                Our bar serves drinks alongside dinner. Alcohol is served only to guests aged {{ restaurant.bar_min_age }} and above, with photo ID. Mocktails and filter coffee are for everyone. <a href="{% url 'policy' %}#bar" class="text-gold">Bar policy</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

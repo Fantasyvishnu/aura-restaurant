@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gallery | AURA Fine Dining &amp; Bar{% endblock %}
+{% block meta_description %}Photos of AURA Fine Dining &amp; Bar: the palace-inspired dining hall, banana-leaf feasts, signature dishes, filter coffee and the courtyard.{% endblock %}
+{% block og_title %}Gallery | AURA Fine Dining &amp; Bar{% endblock %}
+
+{% block content %}
+<!-- GALLERY HEADER -->
+<section class="py-5" style="margin-top: 75px; background: radial-gradient(circle at 50% 20%, rgba(20, 170, 170, 0.15) 0%, rgba(190, 52, 112, 0.1) 50%, transparent 75%);">
+    <div class="container text-center py-4" data-aos="fade-down">
+        <span class="badge-purple mb-2 d-inline-block">Ambience & Food</span>
+        <h1 class="brand-font display-4 mb-3">Moments at <span class="text-ocean-gradient">AURA</span></h1>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+            Step into our palace-inspired dining hall. Explore the interiors, the courtyard and the dishes that make a Tamil feast.
+        </p>
+    </div>
+</section>
+
+<!-- GALLERY GRID & LIGHTBOX (FROM THE DATABASE) -->
+<section class="py-5">
+    <div class="container">
+        <!-- Filter tabs are built from the categories defined in models.py -->
+        <div class="menu-nav-tabs mb-5" data-aos="fade-up">
+            <button type="button" class="menu-tab-btn active" data-filter="all">All Photos</button>
+            {% for value, label in category_choices %}
+            <button type="button" class="menu-tab-btn" data-filter="{{ value }}">{{ label }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="row g-4" id="galleryGrid">
+            {% for item in gallery_images %}
+            <div class="col-lg-4 col-md-6 menu-grid-item" data-category="{{ item.category }}" data-aos="fade-up" data-aos-delay="100">
+                <div class="gallery-item">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+                    {% else %}
+                        <img src="{% static 'images/placeholder_dish.png' %}" alt="{{ item.title }}" loading="lazy">
+                    {% endif %}
+                    <div class="gallery-overlay">
+                        {% if item.category == 'interior' %}
+                            <span class="badge-gold align-self-start mb-2 small py-1 px-2">{{ item.get_category_display }}</span>
+                        {% elif item.category == 'dishes' %}
+                            <span class="badge-coral align-self-start mb-2 small py-1 px-2">{{ item.get_category_display }}</span>
+                        {% elif item.category == 'drinks' %}
+                            <span class="badge-cyan align-self-start mb-2 small py-1 px-2">{{ item.get_category_display }}</span>
+                        {% elif item.category == 'patio' %}
+                            <span class="badge-emerald align-self-start mb-2 small py-1 px-2">{{ item.get_category_display }}</span>
+                        {% else %}
+                            <span class="badge-purple align-self-start mb-2 small py-1 px-2">{{ item.get_category_display }}</span>
+                        {% endif %}
+                        <h5 class="gallery-title brand-font text-white mb-1">{{ item.title }}</h5>
+                        <p class="gallery-desc text-light small mb-0">{{ item.description }}</p>
+                        <i class="bi bi-arrows-fullscreen text-gold fs-4 mt-2"></i>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted py-5">
+                <p>No photos yet. Upload gallery images in the Django admin panel.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

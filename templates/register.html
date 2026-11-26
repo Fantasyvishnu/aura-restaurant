@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Guest Registration | AURA Fine Dining &amp; Bar{% endblock %}
+{% block meta_description %}Create a free AURA Fine Dining &amp; Bar guest profile to book and manage your table reservations.{% endblock %}
+
+{% block content %}
+<section class="d-flex align-items-center justify-content-center min-vh-100 py-5" style="margin-top: 50px; background: radial-gradient(circle at 50% 30%, rgba(245, 184, 36, 0.12) 0%, transparent 70%);">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-9 col-sm-11" data-aos="zoom-in">
+                <div class="reservation-box p-4 p-md-5">
+                    <!-- Brand Heading -->
+                    <div class="text-center mb-4">
+                        <i class="bi bi-stars brand-logo-icon fs-1 text-gold d-block mb-2"></i>
+                        <span class="badge-gold mb-2 d-inline-block">Guest Account</span>
+                        <h2 class="brand-font text-white mb-1">Create Guest Profile</h2>
+                        <p class="text-muted small">Create an account to book faster and manage your reservations in one place.</p>
+                    </div>
+
+                    <!-- Register Form (your typed values are kept if there is an error; passwords never are) -->
+                    <form method="POST" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">
+                                    <i class="bi bi-person-fill text-gold me-1"></i> Full Name *
+                                </label>
+                                <input type="text" class="form-control {% if form.full_name.errors %}is-invalid{% endif %}" id="fullName" name="full_name" value="{{ form.full_name.value|default:'' }}" placeholder="e.g. Meenakshi Sundaram" autocomplete="name" maxlength="150" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="regUsername" class="form-label">
+                                    <i class="bi bi-at text-gold me-1"></i> Username *
+                                </label>
+                                <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="regUsername" name="username" value="{{ form.username.value|default:'' }}" placeholder="Choose username" autocomplete="username" maxlength="150" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="regEmail" class="form-label">
+                                <i class="bi bi-envelope-fill text-gold me-1"></i> Email Address *
+                            </label>
+                            <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="regEmail" name="email" value="{{ form.email.value|default:'' }}" placeholder="name@domain.com" autocomplete="email" required>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="regPassword" class="form-label">
+                                    <i class="bi bi-lock-fill text-gold me-1"></i> Password *
+                                </label>
+                                <input type="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="regPassword" name="password" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+                                <small class="text-muted">Not too common, not only numbers.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label">
+                                    <i class="bi bi-shield-check text-gold me-1"></i> Confirm Password *
+                                </label>
+                                <input type="password" class="form-control {% if form.confirm_password.errors %}is-invalid{% endif %}" id="confirmPassword" name="confirm_password" placeholder="Repeat password" autocomplete="new-password" required>
+                            </div>
+                        </div>
+
+                        <!-- Not pre-ticked: the guest must agree on purpose -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="termsCheck" required>
+                            <label class="form-check-label text-muted small" for="termsCheck">
+                                I agree to the <a href="{% url 'policy' %}#privacy" target="_blank" class="text-gold text-decoration-none">Privacy Policy</a> and <a href="{% url 'policy' %}#booking" target="_blank" class="text-gold text-decoration-none">Booking &amp; Fine Policy</a>.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold btn-lg w-100 py-2 mb-3">
+                            <i class="bi bi-check-circle-fill me-2"></i> Register Guest Account
+                        </button>
+
+                        <div class="text-center pt-2 border-top border-secondary border-opacity-25">
+                            <p class="text-muted small mb-0">
+                                Already have an account? <a href="{% url 'login' %}" class="text-gold fw-bold text-decoration-none">Sign In Here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
