@@ -6,6 +6,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Folder for the database and uploaded photos (on Railway this is the /data volume)
+DATA_DIR = Path(os.environ.get('DATA_DIR', BASE_DIR))
 
 
 def env_bool(name, default=False):
@@ -112,7 +114,7 @@ ASGI_APPLICATION = 'restaurant.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DATA_DIR / 'db.sqlite3',
     }
 }
 
@@ -145,7 +147,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'      # where `python manage.py collectstatic` puts files
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'             # uploaded food, gallery and chef photos
+MEDIA_ROOT = DATA_DIR / 'media'             # uploaded food, gallery and chef photos
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -193,5 +195,9 @@ RESTAURANT = {
     # If a guest does not arrive within `grace_minutes` of the booked time, a no-show fine is collected at the restaurant.
     'no_show_fine': int(os.environ.get('NO_SHOW_FINE', '500')),    # rupees, flat per booking
     'grace_minutes': int(os.environ.get('GRACE_MINUTES', '15')),
+    'gst_percent': 5,                           # GST added to food bills (check the rate that applies to your restaurant)
+    'gstin': '',                                # TODO: your GST number, printed on the bill when filled in
+    # Website orders are only accepted during opening hours (set ENFORCE_ORDER_HOURS=0 to test at any time)
+    'enforce_order_hours': env_bool('ENFORCE_ORDER_HOURS', True),
     'bar_min_age': 21,                          # please check the current legal drinking age and your licence conditions
 }
